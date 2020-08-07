@@ -58,6 +58,7 @@ public class TargetingSystem : MonoBehaviour
 			Debug.LogError("Frame Rate not specified in FrameRateLimiter script", FrameRate);
 		}
 		
+		//Rotate laser in the direction of the camera for best angle 
 		if(LaserPosition != null && MaxLaserRange > 0){
 			float laser_camera_distance = cam.transform.position.y - LaserPosition.position.y;
 			float angleDiff = (float) (Math.Atan(2f * laser_camera_distance / MaxLaserRange) / DegToRad);
