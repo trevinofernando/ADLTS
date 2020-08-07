@@ -6,11 +6,11 @@
 #include "Middleware.h"
 
 //using namespace std;
-const unsigned int FPS = 1;
-
+const unsigned int FPS = 1; //Choose the desired frames per second
 
 int main()
 {
+	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
 	
@@ -19,6 +19,10 @@ int main()
 	{	
 		//Break loop if return key is pressed
 	}
+}
+
+void Start() {
+	//TODO: Read parameters from config file
 }
 
 void CallNextFrame(std::function<void(void)> func, unsigned int interval)
