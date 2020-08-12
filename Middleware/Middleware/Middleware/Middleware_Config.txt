@@ -1,0 +1,19 @@
+//Note: the order of the variables is important and the value is read after the = sign.
+//For bool variables: True -> 1 and False -> 0
+
+
+Frames per second:
+  int FPS = 1
+
+Velocity prediction On or Off:
+  bool predictVelocity = 0
+
+Noise Dampening On or Off:
+  bool noiseDampening = 0
+
+Only used if Noise Dampening = 1. Max degree to turn in one frame:
+  float velocityMaxDegreeChange = 1
+
+Dimensions of the Screen:
+  int SCREENSIZE On X = 1024
+  int SCREENSIZE On Y = 1024

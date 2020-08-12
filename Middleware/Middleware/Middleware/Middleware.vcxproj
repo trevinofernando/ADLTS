@@ -158,6 +158,9 @@
     <ClInclude Include="Middleware.h" />
     <ClInclude Include="Vectors.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Middleware_Config.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
