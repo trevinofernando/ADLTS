@@ -54,8 +54,9 @@ void Start() {
 	std::string line;
 	std::vector<std::string> lines;
 
+	std::string fileName = "Middleware_Config.txt";
 	std::ifstream myfile;
-	myfile.open("Middlware_Config.txt");
+	myfile.open(fileName);
 
 	if (!myfile.is_open()) {
 		perror("Error open");
@@ -81,6 +82,16 @@ void Start() {
 	velocityMaxDegreeChange = stoi(lines[n++]);
 	SCREENSIZE.x = stoi(lines[n++]);
 	SCREENSIZE.y = stoi(lines[n++]);
+	if(n + 1 == lines.size()) {
+		std::cout << "Succesfully read parameters from " << fileName << std::endl;
+	}
+	else if(n + 1 <= lines.size()) {
+		std::cout << "Warning! It seems " << fileName << " has more parameters than assigned here." << std::endl;
+	}
+	else {
+		std::cout << "Error " << fileName << " is missing parameters. Ending program." << std::endl;
+		exit(EXIT_FAILURE);
+	}
 }
 
 void CallNextFrame(std::function<void(void)> func, unsigned int interval)
