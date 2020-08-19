@@ -10,8 +10,10 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "Middleware.h"
+#include "DetectionSystem.h"
 
-unsigned int FPS = 1; //Choose the desired frames per second
+unsigned int FPS; //frames per second
+int FieldOfView; //Field of view
 
 bool predictVelocity = false;
 bool noiseDampening = false;
@@ -21,7 +23,7 @@ float velocityMaxDegreeChange = 1;
 float cosOfMaxDegreeChange;
 
 
-Vector2 velocity;
+Vector2 velocity = Vector2(0, 0);
 Vector2 prevTargetPos = Vector2(0, 0);
 
 Vector2 SCREENSIZE;
@@ -77,11 +79,13 @@ void Start() {
 	//Make sure all variables in the config file are beeing set here.
 	int n = 0;
 	FPS = stoi(lines[n++]);
+	FieldOfView = stoi(lines[n++]);
 	predictVelocity = stoi(lines[n++]);
 	noiseDampening = stoi(lines[n++]);
 	velocityMaxDegreeChange = stoi(lines[n++]);
 	SCREENSIZE.x = stoi(lines[n++]);
 	SCREENSIZE.y = stoi(lines[n++]);
+
 	if(n + 1 == lines.size()) {
 		std::cout << "Succesfully read parameters from " << fileName << std::endl;
 	}
@@ -109,10 +113,125 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 
 void FixedUpdate()
 {
-	std::cout << "I am doing something"<< std::endl;
+	std::cout << "New Frame Starts"<< std::endl;
+
+	Vector2 droneCartesiannCoord;
+	bool onScreen = FindDrone(droneCartesiannCoord);	
+
+	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
+	Vector2 targetPosition = droneCartesiannCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
+
+
+	DroneWasDetectedOnThisFrame = true; //defualt flag to true
+	if (!onScreen)
+	{
+		isFirstRotation = true; //If not on screen then set this flag to true
+		DroneWasDetectedOnThisFrame = false;
+		cyclesSinceLastDetectionOfDrone++;
+
+		if (cyclesSinceLastDetectionOfDrone > FPS) { //lost visual for more than 1 second
+			isFirstRotation = true;
+			velocity = Vector2(0, 0); //reset velocity vector to (0,0)
+		}
+	}
+
+
+	if (DroneWasDetectedOnThisFrame) {
+
+		if (noiseDampening && prevTargetPos != Vector2(0, 0)) //If prevTargetPos = 0 (or minimal) then object is not currently moving so no restrictions on movement direction 
+		{
+			targetPosition = ReduceNoice(targetPosition, prevTargetPos);
+		}
+
+		if (predictVelocity && !isFirstRotation)
+		{
+			//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new 
+			velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity;
+			RotateTowards(targetPosition + velocity, FieldOfView, SCREENSIZE);
+			prevTargetPos = targetPosition + velocity;
+		}
+		else {
+			isFirstRotation = false;
+			RotateTowards(targetPosition, FieldOfView, SCREENSIZE);
+			prevTargetPos = targetPosition;
+		}
+
+		cyclesSinceLastDetectionOfDrone = 1; //Reset counter. This need to be reset AFTER the velocity is calculated for the current frame.
+	}
+
+
+	std::cout << "New Frame Ends"<< std::endl;
+}
+
+void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize)
+{
+	float angleX = targetPosition.x * fieldOfView / screenSize.x;
+	float angleY = targetPosition.y * fieldOfView / screenSize.y;
+
+	//TODO
+	//Note: that angleX is the angle offset in the horizontal which is controlled by MotorY (that rotates on the Y axis)
+	//MotorForHorizontalMovement.transform.Rotate(Vector3(0, 1, 0) * angleX); //VerticalAxis controls left and right movement
+	//MotorForVerticalMovement.transform.Rotate(Vector3(1, 0, 0) * -angleY); //HorizontalAxis controls up and down movement
+}
+
+Vector2 ReduceNoice(Vector2 targetPosition, Vector2 prev_targetPosition) {
+	cosOfMaxDegreeChange = (float) cos(DegToRad * (velocityMaxDegreeChange));//field of vision to both sides of velocity vector.
+
+	float cosOfAnglePhi = DotProduct2D(Normalized2D(prev_targetPosition), Normalized2D(targetPosition));
+
+	//Debug.Log("Phi: " + Math.Acos(cosOfAnglePhi) / DegToRad + " < " + "MaxDegreeChange: " + Math.Acos(cosOfMaxDegreeChange) / DegToRad);
+	if (cosOfAnglePhi > cosOfMaxDegreeChange) //Not inside view cone  CHECK THE SIGN
+	{
+		//Debug.Log("cosOfAnglePhi: " + cosOfAnglePhi + " > " + "cosOfMaxDegreeChange: " + cosOfMaxDegreeChange);
+		Vector2 rotatedVectorCounterClockwise = Vector2();//vector in the edge of the field of vision (left of prev_targetPosition)
+		Vector2 rotatedVectorClockwise = Vector2();//vector in the edge of the field of vision (right of prev_targetPosition)
+
+		rotatedVectorCounterClockwise.x = (float)(prev_targetPosition.x * cos(DegToRad * velocityMaxDegreeChange) - prev_targetPosition.y * sin(DegToRad * velocityMaxDegreeChange));
+		rotatedVectorCounterClockwise.y = (float)(prev_targetPosition.x * sin(DegToRad * velocityMaxDegreeChange) + prev_targetPosition.y * cos(DegToRad * velocityMaxDegreeChange));
+		rotatedVectorClockwise.x = (float)(prev_targetPosition.x * cos(DegToRad * velocityMaxDegreeChange) + prev_targetPosition.y * sin(DegToRad * velocityMaxDegreeChange));
+		rotatedVectorClockwise.y = (float)(prev_targetPosition.x * -sin(DegToRad * velocityMaxDegreeChange) + prev_targetPosition.y * cos(DegToRad * velocityMaxDegreeChange));
+
+		if (cosOfAnglePhi > 0)
+		{
+			//Then angle is less than 90 degrees
+		}
+		else if (cosOfAnglePhi < 0) //Then angle is more than 90 degrees
+		{
+			//Flip vectors since targetPosition is on the opposite side
+			rotatedVectorCounterClockwise = rotatedVectorCounterClockwise * -1;
+			rotatedVectorClockwise = rotatedVectorClockwise * -1;
+			//prev_targetPosition *= -1;                       
+		}
+		else//(cosOfAnglePhi == 0) Then angle is 90 degrees
+		{
+			isFirstRotation = true;
+			return Vector2(0, 0); //Unlikely the the drone moved in this direction. Ignore this frame
+		}
+
+		//Get projection on the closest rotated vector
+		float cosOfCounterClockwiseVector = DotProduct2D(Normalized2D(rotatedVectorCounterClockwise), Normalized2D(targetPosition));
+		float cosOfClockwiseVector = DotProduct2D(Normalized2D(rotatedVectorClockwise), Normalized2D(targetPosition));
+
+		if (cosOfCounterClockwiseVector > cosOfClockwiseVector)
+		{
+			//Then counter clockwise vector is closer 
+			return ProjectionOf_U_Onto_V(targetPosition, rotatedVectorCounterClockwise);
+		}
+		else
+		{
+			//Then clockwise vector is closer 
+			return ProjectionOf_U_Onto_V(targetPosition, rotatedVectorClockwise);
+		}
+	}
+	else
+	{
+		//targetPosition is already in the direction of posible directions
+		return targetPosition;
+	}
 }
 
 float FPStoMilliseconds(unsigned int fps) 
 {
 	return (float)(1000 / fps);
 }
+

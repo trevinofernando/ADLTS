@@ -152,9 +152,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Middleware.cpp" />
+    <ClCompile Include="DetectionSystem.cpp" />
     <ClCompile Include="Vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DetectionSystem.h" />
     <ClInclude Include="Middleware.h" />
     <ClInclude Include="Vectors.h" />
   </ItemGroup>
