@@ -5,10 +5,13 @@
 Frames per second:
   int FPS = 1
 
+Camera Field of View:
+  FieldOfView = 60
+
 Velocity prediction On or Off:
   bool predictVelocity = 0
 
-Noise Dampening On or Off:
+Noise Dampening On or Off (1 or 0):
   bool noiseDampening = 0
 
 Only used if Noise Dampening = 1. Max degree to turn in one frame:
