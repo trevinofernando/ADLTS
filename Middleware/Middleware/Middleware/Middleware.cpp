@@ -27,6 +27,7 @@ Vector2 velocity = Vector2(0, 0);
 Vector2 prevTargetPos = Vector2(0, 0);
 
 Vector2 SCREENSIZE;
+Vector2 OFFSET_CAM;
 
 bool isFirstRotation = true;
 bool DroneWasDetectedOnThisFrame;
@@ -85,6 +86,8 @@ void Start() {
 	velocityMaxDegreeChange = stoi(lines[n++]);
 	SCREENSIZE.x = stoi(lines[n++]);
 	SCREENSIZE.y = stoi(lines[n++]);
+	OFFSET_CAM.x = stoi(lines[n++]);
+	OFFSET_CAM.y = stoi(lines[n++]);
 
 	if(n + 1 == lines.size()) {
 		std::cout << "Succesfully read parameters from " << fileName << std::endl;
@@ -147,12 +150,12 @@ void FixedUpdate()
 		{
 			//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new 
 			velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity;
-			RotateTowards(targetPosition + velocity, FieldOfView, SCREENSIZE);
+			RotateTowards(targetPosition + velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition + velocity;
 		}
 		else {
 			isFirstRotation = false;
-			RotateTowards(targetPosition, FieldOfView, SCREENSIZE);
+			RotateTowards(targetPosition + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition;
 		}
 

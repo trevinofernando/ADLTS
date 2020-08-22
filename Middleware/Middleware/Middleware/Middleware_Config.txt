@@ -20,3 +20,7 @@ Only used if Noise Dampening = 1. Max degree to turn in one frame:
 Dimensions of the Screen:
   int SCREENSIZE On X = 1024
   int SCREENSIZE On Y = 1024
+
+Offset of camera in pixels (+ for right or up and - for left and down):
+  int offsetHorizontal = 0
+  int offsetVertical = 0
