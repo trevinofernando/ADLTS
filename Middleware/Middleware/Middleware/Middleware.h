@@ -6,7 +6,6 @@ void Start();
 void FixedUpdate();
 void CallNextFrame(std::function<void(void)> func, unsigned int interval);
 
-float GetNoise(float Max_Noise);
 float FPStoMilliseconds(unsigned int fps);
 void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize);
 

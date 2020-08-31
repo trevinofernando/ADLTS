@@ -152,11 +152,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Middleware.cpp" />
+    <ClCompile Include="DetectionSystem.cpp" />
     <ClCompile Include="Vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DetectionSystem.h" />
     <ClInclude Include="Middleware.h" />
     <ClInclude Include="Vectors.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Middleware_Config.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

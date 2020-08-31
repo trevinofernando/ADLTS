@@ -34,6 +34,11 @@ struct Vector3
 		return Vector3(x * C, y * C, z * C);
 	}
 
+	inline Vector3 operator / (const float C) const
+	{
+		return Vector3(x / C, y / C, z / C);
+	}
+
 	inline Vector3 operator - (const float C) const
 	{
 		return Vector3(x - C, y - C, z - C);
@@ -58,6 +63,11 @@ struct Vector3
 	inline bool operator == (const Vector3& V) const
 	{
 		return (x == V.x && y == V.y && z == V.z);
+	}
+
+	inline bool operator != (const Vector3& V) const
+	{
+		return (x != V.x || y != V.y || z != V.z);
 	}
 
 	inline float Dot(const Vector3& V) const
@@ -98,6 +108,11 @@ struct Vector2
 		return Vector2(x * C, y * C);
 	}
 
+	inline Vector2 operator / (const float C) const
+	{
+		return Vector2(x / C, y / C);
+	}
+
 	inline Vector2 operator - (const float C) const
 	{
 		return Vector2(x - C, y - C);
@@ -122,6 +137,11 @@ struct Vector2
 	inline bool operator == (const Vector2& V) const
 	{
 		return (x == V.x && y == V.y);
+	}
+
+	inline bool operator != (const Vector2& V) const
+	{
+		return (x != V.x || y != V.y);
 	}
 
 	inline float Dot(const Vector2& V) const
