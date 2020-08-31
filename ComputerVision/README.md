@@ -1,2 +1,4 @@
-# ADLTS
-A Unity Simulation for the Automated Drone Laser Tracking System (ADLTS). The simulation is to run experiments for my senior design project. I want this part to advance in parallel with the rest of the project since COVID-19 won't allow my team to meet any time soon.
+# Computer Vision
+Attached here is a link to a google doc that goes into some detail on how to set up OpenCV and explains some of the design decisions that have been made towards developing the computer vision aspect of this project.
+
+https://docs.google.com/document/d/15uSA03NAijGoolrN92swyxYWS6gxo3xHwgrJcVOp6HA/edit?usp=sharing
