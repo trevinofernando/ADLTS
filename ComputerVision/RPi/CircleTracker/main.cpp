@@ -133,6 +133,8 @@ int main(int argc, char** argv)
         tracker->update(frame,bbox);
         // Draws a rectangle around the new bounding box
         rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
+        // Print central coordinate of bounding box
+        cout << "Centroid: (" << (bbox.width - bbox.x)/2 << ", " << (bbox.height - bbox.y)/2 << ")" << endl;
 
         // Calculate frame rate
         float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
