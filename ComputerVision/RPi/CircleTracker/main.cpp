@@ -27,27 +27,39 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    // Creates object for background subtraction
-    Ptr<BackgroundSubtractor> backSub = createBackgroundSubtractorMOG2();
+    Ptr<Tracker> tracker;
 
-    // CSRT allows high accuracy with low speed (~8fps)
-    Ptr<Tracker> tracker = cv::TrackerCSRT::create();
-    // KCF provides better speed for slightly worse accuracy (~37fps)
-    //Ptr<Tracker> tracker = cv::TrackerKCF::create();
-    // MOSSE is used for speed over accuracy (~200fps)
-    //Ptr<Tracker> tracker = cv::TrackerMOSSE::create();
+    string trackerTypes[8] = {"BOOSTING", "MIL", "KCF", "TLD", "MEDIANFLOW",
+    "GOTURN", "MOSSE", "CSRT"};
+
+    string trackerType = trackerTypes[4];
+
+    if (trackerType == "BOOSTING")
+        tracker = TrackerBoosting::create();
+    else if (trackerType == "MIL")
+        tracker = TrackerMIL::create();
+    else if (trackerType == "KCF")
+        tracker = TrackerKCF::create();
+    else if (trackerType == "TLD")
+        tracker = TrackerTLD::create();
+    else if (trackerType == "MEDIANFLOW")
+        tracker = TrackerMedianFlow::create();
+    else if (trackerType == "GOTURN")
+        tracker = TrackerGOTURN::create();
+    else if (trackerType == "MOSSE")
+        tracker = TrackerMOSSE::create();
+    else if (trackerType == "CSRT")
+        tracker = TrackerCSRT::create();
 
     // Captures initial frame and gives size of frame size
     cap >> frame;
+    flip(frame, frame, 0);
     cout << "Width: " << frame.size().width << endl;
     cout << "Height: " << frame.size().height << endl;
 
-    //while (waitKey(1) != 27)
-        //imshow("First frame", frame);
-
     vector<Vec3f> circles;
 
-    VideoWriter video("Demo_Videos/Test_Demo_1.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 15, Size(frame.size().width, frame.size().height));
+    VideoWriter video("Demo_Videos/Demo_CircleMedian.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame.size().width, frame.size().height));
 
     while(true)
     {
@@ -55,11 +67,19 @@ int main(int argc, char** argv)
         timer = double(cv::getTickCount());
         // Captures next frame
         cap >> frame;
+        flip(frame, frame, 0);
+
+        if (frame.empty())
+        {
+            cerr << "ERROR: Unable to grab from the camera" << endl;
+            break;
+        }
 
         while (!isCircle)
         {
             // Convert to grayscale
             cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
             // Use Gaussian Blur to improve detection
             GaussianBlur(gray, blur, Size(9,9), 2, 2);
 
@@ -72,7 +92,7 @@ int main(int argc, char** argv)
             // 7 - threshold for center detection
             // 8 - minimum radius that will be detected
             // 9 - maximum radius that will be detected
-            cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 80, 50, 15, 25);
+            cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 80, 50, 15, 100);
 
             if (circles.size() > 0)
             {
@@ -89,31 +109,28 @@ int main(int argc, char** argv)
                 // Draw circle on image
                 circle(frame, center, radius, Scalar(255, 0, 0), 2, 1);
 
-                while (waitKey(1) != 27)
-                    imshow("Circle Detected", frame);
-
                 // Initialize tracker
                 tracker->init(frame, bbox);
+                circles.clear();
             }
 
-            cap >> frame;
+            // Calculate frame rate
+            float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
+            // Display fps in window
+            cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_COMPLEX, 0.7, (20, 230, 20), 2);
 
-            // Convert to grayscale
-            cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+            // Outputs frame to window
+            imshow("Live", frame);
 
+            // Write frame to output video
             video.write(frame);
-        }
 
-
-
-        if (frame.empty())
-        {
-            cerr << "ERROR: Unable to grab from the camera" << endl;
-            break;
+            cap >> frame;
+            flip(frame, frame, 0);
         }
 
         // Updates tracker with previous bounding box coordinates
-        tracker->update(frame, bbox);
+        tracker->update(frame,bbox);
         // Draws a rectangle around the new bounding box
         rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
 
@@ -134,5 +151,6 @@ int main(int argc, char** argv)
     }
 
     cap.release();
+    video.release();
     return 0;
 }
