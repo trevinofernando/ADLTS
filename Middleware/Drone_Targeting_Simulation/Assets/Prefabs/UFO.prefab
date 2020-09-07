@@ -542,3 +542,5 @@ MonoBehaviour:
   AvgDistanceValue: {fileID: 0}
   AvgDistancePerNSecValue: {fileID: 0}
   SecondsOfLongTimeStats: 10
+  LaserColorHit: {fileID: 2100000, guid: 3a69af07010330442b0dbe0290711801, type: 2}
+  LaserColorMiss: {fileID: 2100000, guid: b200d7675e0f9d84f8802c92666a9fdb, type: 2}

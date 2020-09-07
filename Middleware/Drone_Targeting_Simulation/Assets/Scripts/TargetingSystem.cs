@@ -41,6 +41,8 @@ public class TargetingSystem : MonoBehaviour
 	
     private System.Random random = new System.Random();
 	private FrameRateLimiter FrameRate;
+    private LogManager Log;
+    private string LogFileName = "InputOutput.txt";
     //private int frameCounter = 0;
     //private float clock = 0f;
 
@@ -53,13 +55,18 @@ public class TargetingSystem : MonoBehaviour
 		velocity = new Vector2(0f, 0f);
         isFirstRotation = true;
 		
+		Log = LogManager.Instance;
 		FrameRate = FrameRateLimiter.Instance;
-		if(FrameRate == null){
-			Debug.LogError("Frame Rate not specified in FrameRateLimiter script", FrameRate);
-		}
-		
-		//Rotate laser in the direction of the camera for best angle 
-		if(LaserPosition != null && MaxLaserRange > 0){
+        if (FrameRate == null || Log == null)
+        {
+            Debug.LogError("Frame Rate not specified in FrameRateLimiter script", FrameRate);
+            Debug.LogError("Log not specified in FrameRateLimiter script", Log);
+        }
+        Log.LogParameters(LogFileName, "ADLTS");
+        Log.LogResults(LogFileName, "targetPositionX" + Log.tab + "targetPositionY" + Log.tab + "AngleX" + Log.tab + "AngleY\n\n");
+
+        //Rotate laser in the direction of the camera for best angle 
+        if (LaserPosition != null && MaxLaserRange > 0){
 			float laser_camera_distance = cam.transform.position.y - LaserPosition.position.y;
 			float angleDiff = (float) (Math.Atan(2f * laser_camera_distance / MaxLaserRange) / DegToRad);
 			cam.transform.Rotate(angleDiff * AXIS[(int) Axis.x], Space.Self);
@@ -89,9 +96,8 @@ public class TargetingSystem : MonoBehaviour
 		Vector2 droneCartesiannCoord = new Vector2(droneCoordinateInCamera.x, droneCoordinateInCamera.y);
 		Vector2 center = new Vector2(0.5f, 0.5f);
 		Vector2 targetPosition = droneCartesiannCoord - center;
-		
-		
-		DroneWasDetectedOnThisFrame = true; //defualt flag to true
+
+        DroneWasDetectedOnThisFrame = true; //defualt flag to true
         if (!onScreen || (float)random.NextDouble() < chanceToLoseFrame)
         {
             isFirstRotation = !onScreen; //If not on screen then set this flag to true
@@ -140,6 +146,8 @@ public class TargetingSystem : MonoBehaviour
         float angleX = targetPosition.x * fieldOfView / screenSize.x;
         float angleY = targetPosition.y * fieldOfView / screenSize.y;
 
+        Log.LogResults(LogFileName, targetPosition.x.ToString("0.000") + ", " + targetPosition.y.ToString("0.000") + Log.tab + angleX.ToString("0.000") + Log.tab + angleY.ToString("0.000") + "\n");
+        
         //Note: that angleX is the angle offset in the horizontal which is controlled by MotorY (that rotates on the Y axis)
         MotorForHorizontalMovement.transform.Rotate(angleX * AXIS[(int) VerticalAxis], Space.Self); //VerticalAxis controls left and right movement
         MotorForVerticalMovement.transform.Rotate(-angleY * AXIS[(int) HorizontalAxis], Space.Self); //HorizontalAxis controls up and down movement
