@@ -134,7 +134,7 @@ int main(int argc, char** argv)
         // Draws a rectangle around the new bounding box
         rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
         // Print central coordinate of bounding box
-        cout << "Centroid: (" << bbox.x + bbox.width/2} << ", " << bbox.y + bbox.height/2 << ")" << endl;
+        cout << "Centroid: (" << bbox.x + bbox.width/2 << ", " << bbox.y + bbox.height/2 << ")" << endl;
 
         // Calculate frame rate
         float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
