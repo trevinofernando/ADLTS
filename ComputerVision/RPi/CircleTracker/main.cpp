@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
+#include <chrono>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -9,25 +10,31 @@
 using namespace std;
 using namespace cv;
 
-int main(int argc, char** argv)
-{
-    Rect2d bbox;
-    Point centroid;
-    Mat frame, gray, blur;
-    double timer;
-    bool isCircle = false;
-    int bboxDim;
+VideoCapture cap;
+Mat frame;
+Ptr<Tracker> tracker;
+Rect2d bbox;
 
+void Init();
+Point Track();
+
+int main (int argc, char** argv)
+{
+    Init();
+
+    Track();
+ }
+
+void Init()
+{
     // Opens camera module
-    VideoCapture cap(0);
+    cap.open(0);
 
     if (!cap.isOpened())
     {
         cerr << "ERROR: Unable to open the camera" << endl;
-        return 0;
+        exit(0);
     }
-
-    Ptr<Tracker> tracker;
 
     string trackerTypes[8] = {"BOOSTING", "MIL", "KCF", "TLD", "MEDIANFLOW",
     "GOTURN", "MOSSE", "CSRT"};
@@ -56,10 +63,18 @@ int main(int argc, char** argv)
     flip(frame, frame, 0);
     cout << "Width: " << frame.size().width << endl;
     cout << "Height: " << frame.size().height << endl;
+}
 
+Point Track()
+{
+    Point centroid;
+    Mat gray, blur;
+    double timer;
+    bool isCircle = false;
+    int bboxDim;
     vector<Vec3f> circles;
 
-    VideoWriter video("Demo_Videos/Demo_CircleMedian.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame.size().width, frame.size().height));
+    VideoWriter video("Demo_Videos/Testing.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(frame.size().width, frame.size().height));
 
     while(true)
     {
@@ -74,6 +89,9 @@ int main(int argc, char** argv)
             cerr << "ERROR: Unable to grab from the camera" << endl;
             break;
         }
+
+        // Start detection timer
+        auto start = chrono::high_resolution_clock::now();
 
         while (!isCircle)
         {
@@ -96,7 +114,9 @@ int main(int argc, char** argv)
 
             if (circles.size() > 0)
             {
-                cout << "Yay, circle detected!!" << endl;
+                auto end = chrono::high_resolution_clock::now();
+                chrono::duration<double, milli> detectTime = (end - start)/1000;
+                cout << "Time to detect: " << detectTime.count() << "seconds" << endl;
                 isCircle = true;
                 Point center(cvRound(circles[0][0]), cvRound(circles[0][1]));
                 int radius = cvRound(circles[0][2]);
@@ -117,7 +137,7 @@ int main(int argc, char** argv)
             // Calculate frame rate
             float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
             // Display fps in window
-            cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_COMPLEX, 0.7, (20, 230, 20), 2);
+            cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
 
             // Outputs frame to window
             imshow("Live", frame);
@@ -139,7 +159,7 @@ int main(int argc, char** argv)
         // Calculate frame rate
         float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
         // Display fps in window
-        cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_COMPLEX, 0.7, (20, 230, 20), 2);
+        cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
 
         // Write frame to output video
         video.write(frame);
@@ -149,10 +169,10 @@ int main(int argc, char** argv)
 
         // Exits if 'ESC' is pressed
         if (waitKey(1) == 27)
-            break;
+        {
+            cap.release();
+            video.release();
+            return centroid;
+        }
     }
-
-    cap.release();
-    video.release();
-    return 0;
 }
