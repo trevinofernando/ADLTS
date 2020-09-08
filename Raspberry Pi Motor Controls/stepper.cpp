@@ -130,7 +130,7 @@ void Stepper::stepMotor(int thisStep)
 
 int main()
 {
-    float current_angle, new_angle;
+    float new_angle;
     int step, stepsPerRevolution;
 
     current_angle = 0;
@@ -143,9 +143,9 @@ int main()
     for(;;)
     {
         cin>>new_angle;
-        step = (int) ((new_angle-current_angle)*stepsPerRevolution/360);
-        current_angle = new_angle;
-       // step = 1600;
+        step = (int) (new_angle*stepsPerRevolution/360);
+        // current_angle = new_angle;
+        // step = 1600;
         cout<<"\n"<<step<<"\n";
         myStepper.step(step);
         //delay(1000);
