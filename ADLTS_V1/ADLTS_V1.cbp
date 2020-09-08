@@ -31,8 +31,17 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add directory="/usr/local/include/opencv4" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Linker>
+			<Add option="`pkg-config --cflags --libs opencv4`" />
+		</Linker>
+		<Unit filename="DetectionSystem.cpp" />
+		<Unit filename="DetectionSystem.h" />
+		<Unit filename="Middleware.cpp" />
+		<Unit filename="Middleware.h" />
+		<Unit filename="Vectors.cpp" />
+		<Unit filename="Vectors.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />
