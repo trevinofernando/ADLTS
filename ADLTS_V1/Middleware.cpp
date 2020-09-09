@@ -2,7 +2,6 @@
 #include <chrono>
 #include <thread>
 #include <functional>
-#include <Windows.h>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -43,17 +42,17 @@ int main()
 	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
-	
+
 	//Prevent the program from ending
-	while (!GetAsyncKeyState(VK_RETURN))
-	{	
+	while (std::cin.get() != '\n')
+	{
 		//Break loop if return key is pressed
 	}
 }
 
 void Start() {
 	//Read parameters from Middleware_Config.txt file
-	
+
 	std::string line;
 	std::vector<std::string> lines;
 
@@ -67,7 +66,7 @@ void Start() {
 	}
 
 	while (std::getline(myfile, line)) {
-		if (line._Equal("") || line.find("//") != std::string::npos) {
+		if (line == "" || line.find("//") != std::string::npos) {
 			continue;
 		}
 		//Grab everything after the '=' sign
@@ -118,11 +117,11 @@ void FixedUpdate()
 {
 	std::cout << "New Frame Starts"<< std::endl;
 
-	Vector2 droneCartesiannCoord;
-	bool onScreen = FindDrone(droneCartesiannCoord);	
+	Vector2 droneCartesianCoord;
+	bool onScreen = FindDrone(droneCartesianCoord);
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition = droneCartesiannCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
+	Vector2 targetPosition = droneCartesianCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
 
 
 	DroneWasDetectedOnThisFrame = true; //defualt flag to true
@@ -141,14 +140,14 @@ void FixedUpdate()
 
 	if (DroneWasDetectedOnThisFrame) {
 
-		if (noiseDampening && prevTargetPos != Vector2(0, 0)) //If prevTargetPos = 0 (or minimal) then object is not currently moving so no restrictions on movement direction 
+		if (noiseDampening && prevTargetPos != Vector2(0, 0)) //If prevTargetPos = 0 (or minimal) then object is not currently moving so no restrictions on movement direction
 		{
 			targetPosition = ReduceNoice(targetPosition, prevTargetPos);
 		}
 
 		if (predictVelocity && !isFirstRotation)
 		{
-			//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new 
+			//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new
 			velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity;
 			RotateTowards(targetPosition + velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition + velocity;
@@ -203,7 +202,7 @@ Vector2 ReduceNoice(Vector2 targetPosition, Vector2 prev_targetPosition) {
 			//Flip vectors since targetPosition is on the opposite side
 			rotatedVectorCounterClockwise = rotatedVectorCounterClockwise * -1;
 			rotatedVectorClockwise = rotatedVectorClockwise * -1;
-			//prev_targetPosition *= -1;                       
+			//prev_targetPosition *= -1;
 		}
 		else//(cosOfAnglePhi == 0) Then angle is 90 degrees
 		{
@@ -217,12 +216,12 @@ Vector2 ReduceNoice(Vector2 targetPosition, Vector2 prev_targetPosition) {
 
 		if (cosOfCounterClockwiseVector > cosOfClockwiseVector)
 		{
-			//Then counter clockwise vector is closer 
+			//Then counter clockwise vector is closer
 			return ProjectionOf_U_Onto_V(targetPosition, rotatedVectorCounterClockwise);
 		}
 		else
 		{
-			//Then clockwise vector is closer 
+			//Then clockwise vector is closer
 			return ProjectionOf_U_Onto_V(targetPosition, rotatedVectorClockwise);
 		}
 	}
@@ -233,7 +232,7 @@ Vector2 ReduceNoice(Vector2 targetPosition, Vector2 prev_targetPosition) {
 	}
 }
 
-float FPStoMilliseconds(unsigned int fps) 
+float FPStoMilliseconds(unsigned int fps)
 {
 	return (float)(1000 / fps);
 }
