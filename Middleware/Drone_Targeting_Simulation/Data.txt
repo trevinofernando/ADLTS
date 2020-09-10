@@ -146,3 +146,27 @@ Time Created: 8/30/2020 3:51:45 PM
 20: 0    0.040005
 40: 15    0.04606966
 60: 30    0.06950091
+-----New Entry: 9/7/2020 3:52:06 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.0001
+chanceToLoseFrame: 0.1
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 9/7/2020 5:09:27 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+

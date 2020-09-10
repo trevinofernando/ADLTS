@@ -9,6 +9,7 @@
 #include <string>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <opencv2/opencv.hpp>
 #include "Middleware.h"
 #include "DetectionSystem.h"
 
@@ -36,6 +37,7 @@ int cyclesSinceLastDetectionOfDrone = 0;
 
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
+Rect2d bbox;
 
 
 int main()
@@ -90,7 +92,7 @@ void Start() {
 	OFFSET_CAM.y = stoi(lines[n++]);
 
 	if(n + 1 == lines.size()) {
-		std::cout << "Succesfully read parameters from " << fileName << std::endl;
+		std::cout << "Successfully read parameters from " << fileName << std::endl;
 	}
 	else if(n + 1 <= lines.size()) {
 		std::cout << "Warning! It seems " << fileName << " has more parameters than assigned here." << std::endl;
@@ -125,7 +127,7 @@ void FixedUpdate()
 	Vector2 targetPosition = droneCartesiannCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
 
 
-	DroneWasDetectedOnThisFrame = true; //defualt flag to true
+	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
 	{
 		isFirstRotation = true; //If not on screen then set this flag to true
@@ -143,7 +145,7 @@ void FixedUpdate()
 
 		if (noiseDampening && prevTargetPos != Vector2(0, 0)) //If prevTargetPos = 0 (or minimal) then object is not currently moving so no restrictions on movement direction 
 		{
-			targetPosition = ReduceNoice(targetPosition, prevTargetPos);
+			targetPosition = ReduceNoise(targetPosition, prevTargetPos);
 		}
 
 		if (predictVelocity && !isFirstRotation)
@@ -170,14 +172,14 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 {
 	float angleX = targetPosition.x * fieldOfView / screenSize.x;
 	float angleY = targetPosition.y * fieldOfView / screenSize.y;
-
+	std::cout << "Angle X: " + angleX << std::endl << "Angle Y: " + angleY << std::endl;
 	//TODO
 	//Note: that angleX is the angle offset in the horizontal which is controlled by MotorY (that rotates on the Y axis)
 	//MotorForHorizontalMovement.transform.Rotate(Vector3(0, 1, 0) * angleX); //VerticalAxis controls left and right movement
 	//MotorForVerticalMovement.transform.Rotate(Vector3(1, 0, 0) * -angleY); //HorizontalAxis controls up and down movement
 }
 
-Vector2 ReduceNoice(Vector2 targetPosition, Vector2 prev_targetPosition) {
+Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
 	cosOfMaxDegreeChange = (float) cos(DegToRad * (velocityMaxDegreeChange));//field of vision to both sides of velocity vector.
 
 	float cosOfAnglePhi = DotProduct2D(Normalized2D(prev_targetPosition), Normalized2D(targetPosition));
@@ -228,7 +230,7 @@ Vector2 ReduceNoice(Vector2 targetPosition, Vector2 prev_targetPosition) {
 	}
 	else
 	{
-		//targetPosition is already in the direction of posible directions
+		//targetPosition is already in the direction of possible directions
 		return targetPosition;
 	}
 }
