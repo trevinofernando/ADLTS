@@ -9,7 +9,7 @@
 #include <string>
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 #include "Middleware.h"
 #include "DetectionSystem.h"
 
@@ -37,7 +37,7 @@ int cyclesSinceLastDetectionOfDrone = 0;
 
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
-Rect2d bbox;
+//Rect2d bbox;
 
 
 int main()
