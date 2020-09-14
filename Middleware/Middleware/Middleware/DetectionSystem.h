@@ -2,4 +2,4 @@
 
 #include "Vectors.h"
 
-bool FindDrone(Vector2& droneCartesiannCoord);
+bool FindDrone(Vector2& droneCartesiannCoord, int trackerType);
