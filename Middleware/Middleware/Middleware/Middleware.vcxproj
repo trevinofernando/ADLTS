@@ -163,6 +163,9 @@
   <ItemGroup>
     <None Include="Middleware_Config.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Middleware_Config_Calibration_On_5deg.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

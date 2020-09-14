@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h>
 #include <chrono>
 #include <thread>
 #include <functional>
@@ -12,9 +13,10 @@
 //#include <opencv2/opencv.hpp>
 #include "Middleware.h"
 #include "DetectionSystem.h"
+#include "Motors.h"
 
 unsigned int FPS; //frames per second
-int FieldOfView; //Field of view
+float FieldOfView; //Field of view
 
 bool predictVelocity = false;
 bool noiseDampening = false;
@@ -34,6 +36,10 @@ bool isFirstRotation = true;
 bool DroneWasDetectedOnThisFrame;
 int cyclesSinceLastDetectionOfDrone = 0;
 
+bool CalibrationMode = 0;
+Vector2 CalibrationModeAngles;
+
+int trackerType = 0;
 
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
@@ -81,15 +87,19 @@ void Start() {
 
 	//Make sure all variables in the config file are beeing set here.
 	int n = 0;
-	FPS = stoi(lines[n++]);
-	FieldOfView = stoi(lines[n++]);
-	predictVelocity = stoi(lines[n++]);
-	noiseDampening = stoi(lines[n++]);
-	velocityMaxDegreeChange = stoi(lines[n++]);
-	SCREENSIZE.x = stoi(lines[n++]);
-	SCREENSIZE.y = stoi(lines[n++]);
-	OFFSET_CAM.x = stoi(lines[n++]);
-	OFFSET_CAM.y = stoi(lines[n++]);
+	FPS = stoi(lines[n++]); //int
+	FieldOfView = atof(lines[n++].c_str()); //float
+	predictVelocity = stoi(lines[n++]); //bool
+	noiseDampening = stoi(lines[n++]); //bool
+	velocityMaxDegreeChange = atof(lines[n++].c_str()); //float
+	SCREENSIZE.x = stoi(lines[n++]); //int
+	SCREENSIZE.y = stoi(lines[n++]); //int
+	OFFSET_CAM.x = stoi(lines[n++]); //int
+	OFFSET_CAM.y = stoi(lines[n++]); //int
+	CalibrationMode = stoi(lines[n++]); //bool
+	CalibrationModeAngles.x = atof(lines[n++].c_str()); //float
+	CalibrationModeAngles.y = atof(lines[n++].c_str()); //float
+	trackerType = stoi(lines[n++]); //int
 
 	if(n + 1 == lines.size()) {
 		std::cout << "Successfully read parameters from " << fileName << std::endl;
@@ -101,6 +111,8 @@ void Start() {
 		std::cout << "Error " << fileName << " is missing parameters. Ending program." << std::endl;
 		exit(EXIT_FAILURE);
 	}
+
+	SetupMotors(); //Init motors
 }
 
 void CallNextFrame(std::function<void(void)> func, unsigned int interval)
@@ -121,7 +133,18 @@ void FixedUpdate()
 	std::cout << "New Frame Starts"<< std::endl;
 
 	Vector2 droneCartesiannCoord;
-	bool onScreen = FindDrone(droneCartesiannCoord);	
+	bool onScreen;
+
+	if (CalibrationMode) 
+	{
+		onScreen = 1;
+		RotateTowards(OFFSET_CAM, FieldOfView, SCREENSIZE);
+		return;
+	}
+	else
+	{
+		onScreen = FindDrone(droneCartesiannCoord, trackerType);
+	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
 	Vector2 targetPosition = droneCartesiannCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
@@ -134,14 +157,16 @@ void FixedUpdate()
 		DroneWasDetectedOnThisFrame = false;
 		cyclesSinceLastDetectionOfDrone++;
 
-		if (cyclesSinceLastDetectionOfDrone > FPS) { //lost visual for more than 1 second
+		if (cyclesSinceLastDetectionOfDrone > FPS) 
+		{ //lost visual for more than 1 second
 			isFirstRotation = true;
 			velocity = Vector2(0, 0); //reset velocity vector to (0,0)
 		}
 	}
 
 
-	if (DroneWasDetectedOnThisFrame) {
+	if (DroneWasDetectedOnThisFrame) 
+	{
 
 		if (noiseDampening && prevTargetPos != Vector2(0, 0)) //If prevTargetPos = 0 (or minimal) then object is not currently moving so no restrictions on movement direction 
 		{
@@ -155,7 +180,8 @@ void FixedUpdate()
 			RotateTowards(targetPosition + velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition + velocity;
 		}
-		else {
+		else 
+		{
 			isFirstRotation = false;
 			RotateTowards(targetPosition + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition;
@@ -172,11 +198,16 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 {
 	float angleX = targetPosition.x * fieldOfView / screenSize.x;
 	float angleY = targetPosition.y * fieldOfView / screenSize.y;
-	std::cout << "Angle X: " + angleX << std::endl << "Angle Y: " + angleY << std::endl;
-	//TODO
-	//Note: that angleX is the angle offset in the horizontal which is controlled by MotorY (that rotates on the Y axis)
-	//MotorForHorizontalMovement.transform.Rotate(Vector3(0, 1, 0) * angleX); //VerticalAxis controls left and right movement
-	//MotorForVerticalMovement.transform.Rotate(Vector3(1, 0, 0) * -angleY); //HorizontalAxis controls up and down movement
+	if (CalibrationMode)
+	{
+		angleX = CalibrationModeAngles.x;
+		angleY = CalibrationModeAngles.y;
+	}
+	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
+
+	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
+	RotateMotors(Vector2(angleX, angleY)); 
+
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {

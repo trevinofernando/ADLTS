@@ -6,7 +6,7 @@ Frames per second:
   int FPS = 1
 
 Camera Field of View:
-  FieldOfView = 62
+  FieldOfView = 60
 
 Velocity prediction On or Off:
   bool predictVelocity = 0
@@ -26,11 +26,8 @@ Offset of camera in pixels (+ for right or up and - for left and down):
   int offsetVertical = 0
 
 Calibration Mode for feeding middleware with known angles, ignoring Detection system.
-	bool CalibrationMode = 0
+	bool CalibrationMode = 1
 
 Calibration Mode Angles: This are known angles for calibration. slow frame rate for better meassurement
-	int CalibrationModeAngles.x = 5
-	int CalibrationModeAngles.y = 5
-
-Tracker type {0 is "", 1 is "", 2 is ""}
-	int trackerType = 0
+	int CalibrationModeAngles = 5
+	int CalibrationModeAngles = 5
