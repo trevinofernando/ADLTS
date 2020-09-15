@@ -11,7 +11,7 @@ class Stepper {
 
     // mover method:
     void step(int number_of_steps);
-    void stepAngle(float angles_to_move, int stepsPerRevolution)
+    void stepAngle(float angles_to_move, int stepsPerRevolution);
 
   private:
     void stepMotor(int this_step);
