@@ -1,13 +1,20 @@
+#include <iostream>
+#include "motor.h"
+
+#define stepsPerRevolution 1600
+#define connectionMotor1 0
+#define connectionMotor2 2
+#define connectionMotor3 3
+#define connectionMotor4 4
+using namespace std;
+
+
 int main()
 {
     float angle;
     
-    int stepsPerRevolution = 1600;
     wiringPiSetup();
-    Stepper myStepper(stepsPerRevolution, 0, 2);
-    
-    cin>>angle;
-        void Stepper::stepAngle(float angles_to_move, int stepsPerRevolution)
+    Stepper myStepper(stepsPerRevolution, connectionMotor1, connectionMotor2);
     myStepper.stepAngle(angle, stepsPerRevolution);
     
     return 0;
