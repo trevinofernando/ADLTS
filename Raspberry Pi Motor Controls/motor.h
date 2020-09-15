@@ -1,6 +1,13 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+
+#define totalStepsPerRevolution 1600
+#define connectionMotor1 0
+#define connectionMotor2 2
+#define connectionMotor3 3
+#define connectionMotor4 4
+
 class Stepper {
   public:
     // constructors:
