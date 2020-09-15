@@ -13,7 +13,8 @@
 class StepperMotors {
   public:
     // constructors:
-    StepperMotors(int motor_pin_1, int motor_pin_2, int motor_pin_3, int motor_pin_4);
+    StepperMotors();
+    ~StepperMotors();
 
     // mover method:
     void step(float angleX, float angleY);
