@@ -66,15 +66,15 @@ void Start() {
 	std::vector<std::string> lines;
 
 	std::string fileName = "Middleware_Config.txt";
-	std::ifstream myfile;
-	myfile.open(fileName);
+	std::ifstream myFile;
+	myFile.open(fileName);
 
-	if (!myfile.is_open()) {
+	if (!myFile.is_open()) {
 		perror("Error open");
 		exit(EXIT_FAILURE);
 	}
 
-	while (std::getline(myfile, line)) {
+	while (std::getline(myFile, line)) {
 		if (line._Equal("") || line.find("//") != std::string::npos) {
 			continue;
 		}
@@ -112,7 +112,7 @@ void Start() {
 		exit(EXIT_FAILURE);
 	}
 
-	SetupMotors(); //Init motors
+	wiringPiSetup(); //Init motors
 }
 
 void CallNextFrame(std::function<void(void)> func, unsigned int interval)
@@ -137,7 +137,6 @@ void FixedUpdate()
 
 	if (CalibrationMode) 
 	{
-		onScreen = 1;
 		RotateTowards(OFFSET_CAM, FieldOfView, SCREENSIZE);
 		return;
 	}
@@ -147,7 +146,7 @@ void FixedUpdate()
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition = droneCartesiannCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
+	Vector2 targetPosition = droneCartesiannCoord + Vector2(center.x, -center.y); // If droneCartesianCoord's center is at the bottom left corner, then shift to center
 
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
