@@ -112,7 +112,7 @@ void Start() {
 		exit(EXIT_FAILURE);
 	}
 
-	wiringPiSetup(); //Init motors
+	//wiringPiSetup(); //Init motors
 }
 
 void CallNextFrame(std::function<void(void)> func, unsigned int interval)

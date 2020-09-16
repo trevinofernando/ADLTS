@@ -19,5 +19,5 @@ bool RotateMotors(Vector2 angle)
 	* TurnMotor(B, angle.y);
 	*/
 
-	//true for success. False for any error
+	return true; //for success.False for any error
 }
