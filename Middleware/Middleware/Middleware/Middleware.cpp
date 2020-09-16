@@ -19,6 +19,7 @@ unsigned int FPS; //frames per second
 float FieldOfView; //Field of view
 
 bool predictVelocity = false;
+bool frameCompensation = true;
 bool noiseDampening = false;
 
 //[Range(0f, 180f)]
@@ -90,6 +91,7 @@ void Start() {
 	FPS = stoi(lines[n++]); //int
 	FieldOfView = atof(lines[n++].c_str()); //float
 	predictVelocity = stoi(lines[n++]); //bool
+	frameCompensation = stoi(lines[n++]); //bool
 	noiseDampening = stoi(lines[n++]); //bool
 	velocityMaxDegreeChange = atof(lines[n++].c_str()); //float
 	SCREENSIZE.x = stoi(lines[n++]); //int
@@ -174,8 +176,16 @@ void FixedUpdate()
 
 		if (predictVelocity && !isFirstRotation)
 		{
-			//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new 
-			velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity;
+			if(cyclesSinceLastDetectionOfDrone > 1 && frameCompensation)
+			{
+				Vector2 lastPoint = -velocity * cyclesSinceLastDetectionOfDrone; //Travel back to position of last seen drone
+				velocity = (targetPosition - lastPoint) / (cyclesSinceLastDetectionOfDrone + 1); //Assuming no acceleration
+			}
+			else
+			{
+				//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new 
+				velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity;
+			}
 			RotateTowards(targetPosition + velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition + velocity;
 		}
@@ -188,7 +198,11 @@ void FixedUpdate()
 
 		cyclesSinceLastDetectionOfDrone = 1; //Reset counter. This need to be reset AFTER the velocity is calculated for the current frame.
 	}
-
+	else//Drone Was NOT Detected On This Frame
+	{
+		//Move to future position assuming constant velocity
+		RotateTowards(velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
+	}
 
 	std::cout << "New Frame Ends"<< std::endl;
 }

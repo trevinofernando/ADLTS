@@ -40,7 +40,7 @@ public class LogManager : MonoBehaviour
 
     void Start()
     {
-        pathToLogs = Application.dataPath + "/Logs/";
+        pathToLogs = Application.dataPath + "/TestLogs/";
     }
 
     public void LogParameters(string fileName = "", string Obj = "ADLTS")

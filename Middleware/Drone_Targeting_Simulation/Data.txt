@@ -170,3 +170,39 @@ velocityMaxDegreeChange: 0.01
 
 Entry	Acc	AvgDistance	Velocity
 
+-----New Entry: 9/16/2020 11:41:05 AM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 9/16/2020 11:42:29 AM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 9/16/2020 11:46:21 AM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+

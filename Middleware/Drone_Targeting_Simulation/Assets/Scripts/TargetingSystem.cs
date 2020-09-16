@@ -10,6 +10,7 @@ public class TargetingSystem : MonoBehaviour
     public GameObject drone;
 
     public bool predictVelocity = false;
+    public bool frameCompensation = true;
 	public bool noiseDampening = false;
     [Range(0f, .25f)] 
     public float MaxNoise = 0f;
@@ -125,8 +126,15 @@ public class TargetingSystem : MonoBehaviour
 			
 			if (predictVelocity && !isFirstRotation)
 			{
-				//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new 
-				velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity; 
+				if(cyclesSinceLastDetectionOfDrone > 1 && frameCompensation)
+                {
+                    Vector2 lastPoint = -velocity * cyclesSinceLastDetectionOfDrone; //Travel back to position of last seen drone
+                    velocity = (targetPosition - lastPoint) / (cyclesSinceLastDetectionOfDrone + 1); //Assuming no acceleration
+                }
+                else
+                {
+				    velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity; 
+                }
 				RotateTowards(targetPosition + velocity, cam.fieldOfView, SCREENSIZE);
 				prevTargetPos = targetPosition + velocity;
 			}else{
@@ -137,6 +145,11 @@ public class TargetingSystem : MonoBehaviour
 			
 			cyclesSinceLastDetectionOfDrone = 1; //Reset counter. This need to be reset AFTER the velocity is calculated for the current frame.
 		}
+        else//Drone Was NOT Detected On This Frame
+        {
+            //Move to future position assuming constant velocity
+            RotateTowards(velocity, cam.fieldOfView, SCREENSIZE);
+        }
         
 
     }
