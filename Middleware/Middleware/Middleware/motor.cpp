@@ -117,7 +117,7 @@ StepperMotors::StepperMotors(): myStepper1(StepsPerRevolution, connectionMotor1,
 {
 }
 
-void StepperMotors::step(Vector2 v)
+void StepperMotors::RotateMotors(Vector2 v)
 {
   float angleX, angleY;
   angleX = v.x;
