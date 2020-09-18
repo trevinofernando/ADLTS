@@ -48,7 +48,7 @@ class StepperMotors {
     ~StepperMotors();
 
     // mover method:
-    void step(Vector2 v);
+    void RotateMotors(Vector2 v);
 
   private:
     Stepper myStepper1;
