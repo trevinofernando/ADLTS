@@ -1404,6 +1404,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   drone: {fileID: 1497465694}
   predictVelocity: 1
+  frameCompensation: 1
   noiseDampening: 0
   MaxNoise: 0.001
   chanceToLoseFrame: 0
