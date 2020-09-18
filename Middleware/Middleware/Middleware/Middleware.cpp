@@ -16,7 +16,7 @@
 //----- Changes Start Point -----
 #include <wiringPi.h>
 #include <cstddef.h>
-#include "Motor.h"
+#include "motor.h"
 //----- Changes End Point -----
 
 unsigned int FPS; //frames per second
