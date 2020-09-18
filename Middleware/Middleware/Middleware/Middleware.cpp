@@ -10,14 +10,12 @@
 #include <string>
 #define _USE_MATH_DEFINES
 #include <math.h>
-//#include <opencv2/opencv.hpp>
 #include "Middleware.h"
+//#include <opencv2/opencv.hpp>
 #include "DetectionSystem.h"
-//----- Changes Start Point -----
 #include <wiringPi.h>
 #include <cstddef.h>
 #include "motor.h"
-//----- Changes End Point -----
 
 unsigned int FPS; //frames per second
 float FieldOfView; //Field of view
@@ -50,17 +48,11 @@ const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
 //Rect2d bbox;
 
-//----- Changes Start Point -----
 StepperMotors *motor = NULL;
-//----- Changes End Point -----
 
 
 int main()
 {
-	//----- Changes Start Point -----
-	wiringPiSetup();
-	motor = new StepperMotors();
-	//----- Changes End Point -----
 	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
@@ -126,7 +118,8 @@ void Start() {
 		exit(EXIT_FAILURE);
 	}
 
-	//wiringPiSetup(); //Init motors
+	wiringPiSetup();
+	motor = new StepperMotors();
 }
 
 void CallNextFrame(std::function<void(void)> func, unsigned int interval)
@@ -231,11 +224,8 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 
 	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
-	//----- Changes Start Point -----
 	motors -> RotateMotors(Vector2(angleX, angleY)); 
-	//----- Changes End Point -----
 	
-
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
