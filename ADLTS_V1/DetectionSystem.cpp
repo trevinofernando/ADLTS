@@ -33,6 +33,7 @@ bool FindDrone(Vector2 droneCartesianCoord)
 
 void Init()
 {
+    cout << "Initializing detection..." << endl;
     initialized = true;
     isCircle = false;
 
@@ -70,8 +71,8 @@ void Init()
     // Captures initial frame and gives size of frame size
     cap >> frame;
     flip(frame, frame, 0);
-    cout << "Width: " << frame.size().width << endl;
-    cout << "Height: " << frame.size().height << endl;
+    //cout << "Width: " << frame.size().width << endl;
+    //cout << "Height: " << frame.size().height << endl;
 }
 
 bool Detect(Vector2 droneCartesianCoord)
@@ -162,6 +163,13 @@ bool Track(Vector2 droneCartesianCoord)
     droneCartesianCoord.y = bbox.y + bbox.height/2;
     // Print central coordinate of bounding box
     cout << "Centroid: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
+
+    // Calculate frame rate
+    float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
+    // Display fps in window
+    cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
+
+    imshow("Live", frame);
 
     return true;
 }

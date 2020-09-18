@@ -35,11 +35,13 @@
 		</Compiler>
 		<Linker>
 			<Add option="`pkg-config --cflags --libs opencv4`" />
+			<Add option="-pthread" />
 		</Linker>
 		<Unit filename="DetectionSystem.cpp" />
 		<Unit filename="DetectionSystem.h" />
 		<Unit filename="Middleware.cpp" />
 		<Unit filename="Middleware.h" />
+		<Unit filename="Middleware_Config.txt" />
 		<Unit filename="Vectors.cpp" />
 		<Unit filename="Vectors.h" />
 		<Extensions>
