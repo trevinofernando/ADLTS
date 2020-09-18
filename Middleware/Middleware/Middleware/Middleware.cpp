@@ -13,7 +13,11 @@
 //#include <opencv2/opencv.hpp>
 #include "Middleware.h"
 #include "DetectionSystem.h"
-#include "Motors.h"
+//----- Changes Start Point -----
+#include <wiringPi.h>
+#include <cstddef.h>
+#include "Motor.h"
+//----- Changes End Point -----
 
 unsigned int FPS; //frames per second
 float FieldOfView; //Field of view
@@ -46,9 +50,17 @@ const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
 //Rect2d bbox;
 
+//----- Changes Start Point -----
+StepperMotors *motor = NULL;
+//----- Changes End Point -----
+
 
 int main()
 {
+	//----- Changes Start Point -----
+	wiringPiSetup();
+	motor = new StepperMotors();
+	//----- Changes End Point -----
 	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
@@ -219,7 +231,10 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 
 	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
-	RotateMotors(Vector2(angleX, angleY)); 
+	//----- Changes Start Point -----
+	motors -> RotateMotors(Vector2(angleX, angleY)); 
+	//----- Changes End Point -----
+	
 
 }
 
