@@ -10,10 +10,12 @@
 #include <string>
 #define _USE_MATH_DEFINES
 #include <math.h>
-//#include <opencv2/opencv.hpp>
 #include "Middleware.h"
+//#include <opencv2/opencv.hpp>
 #include "DetectionSystem.h"
-#include "Motors.h"
+#include <wiringPi.h>
+#include <cstddef.h>
+#include "motor.h"
 
 unsigned int FPS; //frames per second
 float FieldOfView; //Field of view
@@ -45,6 +47,8 @@ int trackerType = 0;
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
 //Rect2d bbox;
+
+StepperMotors *motor = NULL;
 
 
 int main()
@@ -114,7 +118,8 @@ void Start() {
 		exit(EXIT_FAILURE);
 	}
 
-	//wiringPiSetup(); //Init motors
+	wiringPiSetup();
+	motor = new StepperMotors();
 }
 
 void CallNextFrame(std::function<void(void)> func, unsigned int interval)
@@ -219,8 +224,8 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 
 	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
-	RotateMotors(Vector2(angleX, angleY)); 
-
+	motors -> RotateMotors(Vector2(angleX, angleY)); 
+	
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
