@@ -1,50 +1,34 @@
 #include <iostream>
-#include <stdio.h>
 #include <math.h>
 #include <chrono>
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/tracking/tracker.hpp>
 #include "DetectionSystem.h"
+#include <opencv2/tracking/tracker.hpp>
 
 using namespace std;
 using namespace cv;
 
-VideoCapture cap;
-Mat frame;
 Ptr<Tracker> tracker;
 Rect2d bbox;
 bool initialized = false;
 bool isCircle;
-double timer;
 int bboxDim;
 
-bool FindDrone(Vector2 droneCartesianCoord)
+bool FindDrone(Vector2 droneCartesianCoord, cv::Mat frame)
 {
     if (!initialized)
-        Init();
+        Init(frame);
 
     if (!isCircle)
-        return Detect(droneCartesianCoord);
+        return Detect(droneCartesianCoord, frame);
     else
-        return Track(droneCartesianCoord);
+        return Track(droneCartesianCoord, frame);
 }
 
-void Init()
+void Init(cv::Mat frame)
 {
     cout << "Initializing detection..." << endl;
     initialized = true;
     isCircle = false;
-
-    // Opens camera module
-    cap.open(0);
-
-    if (!cap.isOpened())
-    {
-        cerr << "ERROR: Unable to open the camera" << endl;
-        exit(0);
-    }
 
     string trackerTypes[8] = {"BOOSTING", "MIL", "KCF", "TLD", "MEDIANFLOW",
     "GOTURN", "MOSSE", "CSRT"};
@@ -67,32 +51,15 @@ void Init()
         tracker = TrackerMOSSE::create();
     else if (trackerType == "CSRT")
         tracker = TrackerCSRT::create();
-
-    // Captures initial frame and gives size of frame size
-    cap >> frame;
-    flip(frame, frame, 0);
-    //cout << "Width: " << frame.size().width << endl;
-    //cout << "Height: " << frame.size().height << endl;
 }
 
-bool Detect(Vector2 droneCartesianCoord)
+bool Detect(Vector2 droneCartesianCoord, cv::Mat frame)
 {
     Mat gray, blur;
     vector<Vec3f> circles;
 
     // Start detection timer
     auto start = chrono::high_resolution_clock::now();
-    // Starts timer for FPS count
-    timer = double(cv::getTickCount());
-    // Capture next frame
-    cap >> frame;
-    flip(frame, frame, 0);
-
-    if (frame.empty())
-    {
-        cerr << "Error: Unable to grab from teh camera" << endl;
-        exit(0);
-    }
 
     // Convert to grayscale
     cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
@@ -102,7 +69,7 @@ bool Detect(Vector2 droneCartesianCoord)
 
     // Apply Hough Circle Transform to frame for circle detection
     // Parameters (in order):
-    //  1 - frame to process, 2 - output circle values, 3 - process technique
+    // 1 - frame to process, 2 - output circle values, 3 - process technique
     // 4 - dp, inverse ratio of resolution
     // 5 - minimum distance between detected centers (frame.rows/8)
     // 6 - upper threshold for the internal Canny edge detector
@@ -135,24 +102,14 @@ bool Detect(Vector2 droneCartesianCoord)
         circles.clear();
     }
 
-    // Calculate frame rate
-    float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
-    // Display fps in window
-    cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
-
-    // Outputs frame to window
-    imshow("Live", frame);
-
     if (!isCircle)
         return false;
     else
         return true;
 }
 
-bool Track(Vector2 droneCartesianCoord)
+bool Track(Vector2 droneCartesianCoord, cv::Mat frame)
 {
-    // Grab next frame
-    cap >> frame;
     // Updates tracker with previous bounding box coordinates
     tracker->update(frame,bbox);
     // Draws a rectangle around the new bounding box
@@ -163,13 +120,6 @@ bool Track(Vector2 droneCartesianCoord)
     droneCartesianCoord.y = bbox.y + bbox.height/2;
     // Print central coordinate of bounding box
     cout << "Centroid: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
-
-    // Calculate frame rate
-    float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
-    // Display fps in window
-    cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
-
-    imshow("Live", frame);
 
     return true;
 }

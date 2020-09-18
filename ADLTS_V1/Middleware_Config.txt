@@ -3,7 +3,7 @@
 
 
 Frames per second:
-  int FPS = 1
+  int FPS = 30
 
 Camera Field of View:
   FieldOfView = 60
@@ -18,8 +18,8 @@ Only used if Noise Dampening = 1. Max degree to turn in one frame:
   float velocityMaxDegreeChange = 1
 
 Dimensions of the Screen:
-  int SCREENSIZE On X = 1024
-  int SCREENSIZE On Y = 1024
+  int SCREENSIZE On X = 640
+  int SCREENSIZE On Y = 480
 
 Offset of camera in pixels (+ for right or up and - for left and down):
   int offsetHorizontal = 0
