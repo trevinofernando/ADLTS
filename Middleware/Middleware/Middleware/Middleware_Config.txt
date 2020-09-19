@@ -2,38 +2,38 @@
 //For bool variables: True -> 1 and False -> 0
 
 
-Frames per second:
+//Frames per second:
   int FPS = 1
 
-Camera Field of View:
+//Camera Field of View:
   FieldOfView = 62
 
-Velocity prediction On or Off:
+//Velocity prediction On or Off:
   bool predictVelocity = 0
   
-Velocity prediction On or Off:
+//Velocity prediction On or Off:
   bool frameCompensation = 1
 
-Noise Dampening On or Off (1 or 0):
+//Noise Dampening On or Off (1 or 0):
   bool noiseDampening = 0
 
-Only used if Noise Dampening equals 1. Max degree to turn in one frame:
+//Only used if Noise Dampening equals 1. Max degree to turn in one frame:
   float velocityMaxDegreeChange = 1
 
-Dimensions of the Screen:
+//Dimensions of the Screen:
   int SCREENSIZE On X = 640
   int SCREENSIZE On Y = 480
 
-Offset of camera in pixels (+ for right or up and - for left and down):
+//Offset of camera in pixels (+ for right or up and - for left and down):
   int offsetHorizontal = 0
   int offsetVertical = 0
 
-Calibration Mode for feeding middleware with known angles, ignoring Detection system.
+//Calibration Mode for feeding middleware with known angles, ignoring Detection system.
 	bool CalibrationMode = 0
 
-Calibration Mode Angles: This are known angles for calibration. slow frame rate for better measurement
+//Calibration Mode Angles: This are known angles for calibration. slow frame rate for better measurement
 	int CalibrationModeAngles.x = 5
 	int CalibrationModeAngles.y = 5
 
-Tracker type {0 is "", 1 is "", 2 is ""}
+//Tracker type {0 is "", 1 is "", 2 is ""}
 	int trackerType = 0

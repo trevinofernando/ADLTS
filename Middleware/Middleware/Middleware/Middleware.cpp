@@ -183,7 +183,7 @@ void FixedUpdate()
 		{
 			if(cyclesSinceLastDetectionOfDrone > 1 && frameCompensation)
 			{
-				Vector2 lastPoint = -velocity * cyclesSinceLastDetectionOfDrone; //Travel back to position of last seen drone
+				Vector2 lastPoint = velocity * -cyclesSinceLastDetectionOfDrone; //Travel back to position of last seen drone
 				velocity = (targetPosition - lastPoint) / (cyclesSinceLastDetectionOfDrone + 1); //Assuming no acceleration
 			}
 			else
