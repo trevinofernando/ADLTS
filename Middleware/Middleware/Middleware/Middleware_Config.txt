@@ -17,7 +17,7 @@ Velocity prediction On or Off:
 Noise Dampening On or Off (1 or 0):
   bool noiseDampening = 0
 
-Only used if Noise Dampening = 1. Max degree to turn in one frame:
+Only used if Noise Dampening equals 1. Max degree to turn in one frame:
   float velocityMaxDegreeChange = 1
 
 Dimensions of the Screen:
