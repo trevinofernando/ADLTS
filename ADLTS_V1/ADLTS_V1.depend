@@ -1,12 +1,13 @@
 # depslib dependency file v1.0
-1600475191 source:/home/pi/Desktop/ADLTS/ADLTS_V1/DetectionSystem.cpp
+1600488138 source:/home/pi/Desktop/ADLTS/ADLTS_V1/DetectionSystem.cpp
 	<iostream>
 	<math.h>
 	<chrono>
 	"DetectionSystem.h"
+	"Middleware.h"
 	<opencv2/tracking/tracker.hpp>
 
-1600473072 /home/pi/Desktop/ADLTS/ADLTS_V1/DetectionSystem.h
+1600488059 /home/pi/Desktop/ADLTS/ADLTS_V1/DetectionSystem.h
 	"Vectors.h"
 	<stdio.h>
 	<opencv2/opencv.hpp>
@@ -682,5 +683,24 @@
 
 1599243951 source:/home/pi/Desktop/ADLTS/ADLTS_V1/Vectors.cpp
 	<math.h>
+	"Vectors.h"
+
+1600488122 source:/home/pi/Desktop/ADLTS/ADLTS_V1/Middleware.cpp
+	<iostream>
+	<stdlib.h>
+	<chrono>
+	<thread>
+	<functional>
+	<vector>
+	<fstream>
+	<sstream>
+	<string>
+	<math.h>
+	"Middleware.h"
+	"DetectionSystem.h"
+	<wiringPi.h>
+	"motor.h"
+
+1600488040 /home/pi/Desktop/ADLTS/ADLTS_V1/Middleware.h
 	"Vectors.h"
 

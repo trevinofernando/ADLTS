@@ -2,6 +2,7 @@
 #include <math.h>
 #include <chrono>
 #include "DetectionSystem.h"
+#include "Middleware.h"
 #include <opencv2/tracking/tracker.hpp>
 
 using namespace std;
@@ -13,15 +14,15 @@ bool initialized = false;
 bool isCircle;
 int bboxDim;
 
-bool FindDrone(Vector2 droneCartesianCoord, cv::Mat frame, int trackerNum)
+bool FindDrone(cv::Mat frame, int trackerNum)
 {
     if (!initialized)
         Init(frame, trackerNum);
 
     if (!isCircle)
-        return Detect(droneCartesianCoord, frame);
+        return Detect(frame);
     else
-        return Track(droneCartesianCoord, frame);
+        return Track(frame);
 }
 
 void Init(cv::Mat frame, int trackerNum)
@@ -53,7 +54,7 @@ void Init(cv::Mat frame, int trackerNum)
         tracker = TrackerCSRT::create();
 }
 
-bool Detect(Vector2 droneCartesianCoord, cv::Mat frame)
+bool Detect(cv::Mat frame)
 {
     Mat gray, blur;
     vector<Vec3f> circles;
@@ -84,8 +85,8 @@ bool Detect(Vector2 droneCartesianCoord, cv::Mat frame)
         chrono::duration<double, milli> detectTime = (end - start)/1000;
         cout << "Time to detect: " << detectTime.count() << "seconds" << endl;
         isCircle = true;
-        droneCartesianCoord.x = cvRound(circles[0][0]);
-        droneCartesianCoord.y = cvRound(circles[0][1]);
+        droneCartesianCoord.x = float(cvRound(circles[0][0]));
+        droneCartesianCoord.y = float(cvRound(circles[0][1]));
         int radius = cvRound(circles[0][2]);
         cout << "Radius = " << radius << endl;
 
@@ -110,7 +111,7 @@ bool Detect(Vector2 droneCartesianCoord, cv::Mat frame)
         return true;
 }
 
-bool Track(Vector2 droneCartesianCoord, cv::Mat frame)
+bool Track(cv::Mat frame)
 {
     // Updates tracker with previous bounding box coordinates
     tracker->update(frame,bbox);

@@ -18,6 +18,7 @@
 cv::VideoCapture cap;
 cv::Mat frame;
 double timer;
+Vector2 droneCartesianCoord;
 
 unsigned int FPS; //frames per second
 float FieldOfView; //Field of view
@@ -150,7 +151,7 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
                 cv::putText(frame, ("FPS: " + std::to_string(int(fps))), cv::Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
                 // Display video on screen
 				imshow("Live Feed", frame);
-                cv::waitKey(0);
+                cv::waitKey(1);
 			}
 		}).detach();
 }
@@ -169,7 +170,7 @@ void FixedUpdate()
     }
     flip(frame, frame, 0);
 
-	Vector2 droneCartesianCoord;
+	//Vector2 droneCartesianCoord;
 	bool onScreen;
 
 	if (CalibrationMode)
@@ -179,12 +180,12 @@ void FixedUpdate()
 	}
 	else
 	{
-        onScreen = FindDrone(droneCartesianCoord, frame, trackerType);
+        onScreen = FindDrone(frame, trackerType);
 	}
 
-
+	// This calc works fine
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-    std::cout << "cx = " << SCREENSIZE.x << "and cy = " << SCREENSIZE.y << std::endl;
+    std::cout << "Drone coord = (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << std::endl;
 	Vector2 targetPosition = droneCartesianCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
     std::cout << "1: tx = " << targetPosition.x << "and ty = " << targetPosition.y << std::endl;
 
@@ -252,7 +253,6 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
         angleY = CalibrationModeAngles.y;
 	}
 
-	std::cout << "2: tx = " << targetPosition.x << "and ty = " << targetPosition.y << std::endl;
 	std::cout << "X = " << angleX << " Y = " << angleY << std::endl;
 
     // Note: that angleX is the angle offset in the horizontal and angleY is vertical

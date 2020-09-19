@@ -2,6 +2,8 @@
 
 #include "Vectors.h"
 
+extern Vector2 droneCartesianCoord;
+
 void Start();
 void FixedUpdate();
 void CallNextFrame(std::function<void(void)> func, unsigned int interval);
