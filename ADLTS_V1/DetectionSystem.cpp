@@ -13,10 +13,10 @@ bool initialized = false;
 bool isCircle;
 int bboxDim;
 
-bool FindDrone(Vector2 droneCartesianCoord, cv::Mat frame)
+bool FindDrone(Vector2 droneCartesianCoord, cv::Mat frame, int trackerNum)
 {
     if (!initialized)
-        Init(frame);
+        Init(frame, trackerNum);
 
     if (!isCircle)
         return Detect(droneCartesianCoord, frame);
@@ -24,16 +24,16 @@ bool FindDrone(Vector2 droneCartesianCoord, cv::Mat frame)
         return Track(droneCartesianCoord, frame);
 }
 
-void Init(cv::Mat frame)
+void Init(cv::Mat frame, int trackerNum)
 {
     cout << "Initializing detection..." << endl;
     initialized = true;
     isCircle = false;
 
     string trackerTypes[8] = {"BOOSTING", "MIL", "KCF", "TLD", "MEDIANFLOW",
-    "GOTURN", "MOSSE", "CSRT"};
+    "MOSSE", "CSRT"};
 
-    string trackerType = trackerTypes[4];
+    string trackerType = trackerTypes[trackerNum];
 
     if (trackerType == "BOOSTING")
         tracker = TrackerBoosting::create();
@@ -45,8 +45,8 @@ void Init(cv::Mat frame)
         tracker = TrackerTLD::create();
     else if (trackerType == "MEDIANFLOW")
         tracker = TrackerMedianFlow::create();
-    else if (trackerType == "GOTURN")
-        tracker = TrackerGOTURN::create();
+    //else if (trackerType == "GOTURN")
+        //tracker = TrackerGOTURN::create();
     else if (trackerType == "MOSSE")
         tracker = TrackerMOSSE::create();
     else if (trackerType == "CSRT")
@@ -92,6 +92,8 @@ bool Detect(Vector2 droneCartesianCoord, cv::Mat frame)
         bboxDim = 2 * (cvRound(circles[0][2]));
         Rect2d box(cvRound(circles[0][0]) - radius, cvRound(circles[0][1]) - radius, bboxDim, bboxDim);
         bbox = box;
+
+        cout << "Centroid: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
 
         // Draw circle on image
         Point center(droneCartesianCoord.x, droneCartesianCoord.y);
