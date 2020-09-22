@@ -13,3 +13,4 @@ One can test the Detection system with single images or choose an array of image
 
 For reference, a combined image of all the images in the folder is "CV_Test_Set_Stacked.png"
 
+![alt text](https://raw.githubusercontent.com/trevinofernando/ADLST/master/TestData/CV_Test_Set_Stacked.png)
