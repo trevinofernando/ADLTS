@@ -18,6 +18,7 @@
 cv::VideoCapture cap;
 cv::Mat frame;
 double timer;
+Vector2 droneCartesianCoord;
 
 unsigned int FPS; //frames per second
 float FieldOfView; //Field of view
@@ -99,7 +100,7 @@ void Start() {
 		}
 	}
 
-	//Make sure all variables in the config file are beeing set here.
+	//Make sure all variables in the config file are being set here.
 	int n = 0;
 	FPS = stoi(lines[n++]);
 	FieldOfView = stoi(lines[n++]);
@@ -114,7 +115,7 @@ void Start() {
 	CalibrationMode = stoi(lines[n++]);
 	CalibrationModeAngles.x = atof(lines[n++].c_str());
 	CalibrationModeAngles.y = atof(lines[n++].c_str());
-	trackerType = stoi(lines[n++]);
+	trackerType = stoi(lines[n]);
 
 	if(n + 1 == lines.size()) {
 		std::cout << "Succesfully read parameters from " << fileName << std::endl;
@@ -150,7 +151,7 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
                 cv::putText(frame, ("FPS: " + std::to_string(int(fps))), cv::Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
                 // Display video on screen
 				imshow("Live Feed", frame);
-                cv::waitKey(0);
+                cv::waitKey(1);
 			}
 		}).detach();
 }
@@ -169,7 +170,7 @@ void FixedUpdate()
     }
     flip(frame, frame, 0);
 
-	Vector2 droneCartesianCoord;
+	//Vector2 droneCartesianCoord;
 	bool onScreen;
 
 	if (CalibrationMode)
@@ -179,12 +180,14 @@ void FixedUpdate()
 	}
 	else
 	{
-        onScreen = FindDrone(droneCartesianCoord, frame, trackerType);
+        onScreen = FindDrone(frame, trackerType);
 	}
 
+	// This calc works fine
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
+    std::cout << "Drone coord = (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << std::endl;
 	Vector2 targetPosition = droneCartesianCoord - center; // If droneCartesiannCoord's center is at the bottom left corner, then shift to center
-
+    std::cout << "1: tx = " << targetPosition.x << "and ty = " << targetPosition.y << std::endl;
 
 	DroneWasDetectedOnThisFrame = true; //defualt flag to true
 	if (!onScreen)
@@ -211,9 +214,7 @@ void FixedUpdate()
 		{
 			if (cyclesSinceLastDetectionOfDrone > 1 && frameCompensation)
 			{
-                Vector2 lastPoint;
-                lastPoint.x = -velocity.x * cyclesSinceLastDetectionOfDrone; // Travel back to position of last seen drone
-                lastPoint.y = -velocity.y * cyclesSinceLastDetectionOfDrone; // Travel back to position of last seen drone
+                Vector2 lastPoint = velocity * -cyclesSinceLastDetectionOfDrone; // Travel back to position of last seen drone
                 velocity = (targetPosition - lastPoint) / (cyclesSinceLastDetectionOfDrone + 1); // Assuming no acceleration
 			}
 			else
@@ -252,7 +253,6 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
         angleY = CalibrationModeAngles.y;
 	}
 
-	std::cout << "tx = " << targetPosition.x << "and ty = " << targetPosition.y << std::endl;
 	std::cout << "X = " << angleX << " Y = " << angleY << std::endl;
 
     // Note: that angleX is the angle offset in the horizontal and angleY is vertical
