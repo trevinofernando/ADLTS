@@ -1,26 +1,5 @@
 # depslib dependency file v1.0
-1600462485 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Testing/motor.cpp
-	<wiringPi.h>
-	<stdlib.h>
-	"motor.h"
-	"Vectors.h"
-
-1600462485 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Testing/motor.h
-	"Vectors.h"
-
-1599243951 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Testing/Vectors.h
-
-1600366876 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Testing/Motors.cpp
-	"Motors.h"
-
-1600366876 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Testing/Motors.h
-	"Vectors.h"
-
-1599243951 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Testing/Vectors.cpp
-	<math.h>
-	"Vectors.h"
-
-1601088055 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/DetectionSystem.cpp
+1601690267 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/DetectionSystem.cpp
 	<iostream>
 	<math.h>
 	<chrono>
@@ -36,47 +15,6 @@
 	<opencv2/imgproc.hpp>
 
 1599243951 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Vectors.h
-
-1601062599 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Middleware.h
-	"Vectors.h"
-
-1601087530 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Middleware.cpp
-	<iostream>
-	<stdlib.h>
-	<chrono>
-	<thread>
-	<functional>
-	<vector>
-	<fstream>
-	<sstream>
-	<string>
-	<math.h>
-	"Middleware.h"
-	"DetectionSystem.h"
-	<wiringPi.h>
-	"motor.h"
-	<opencv2/core.hpp>
-	<opencv2/highgui.hpp>
-	<opencv2/imgcodecs.hpp>
-
-1600462485 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/motor.h
-	"Vectors.h"
-
-1600462485 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/motor.cpp
-	<wiringPi.h>
-	<stdlib.h>
-	"motor.h"
-	"Vectors.h"
-
-1600366876 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Motors.cpp
-	"Motors.h"
-
-1600366876 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Motors.h
-	"Vectors.h"
-
-1599243951 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Vectors.cpp
-	<math.h>
-	"Vectors.h"
 
 1595025820 /usr/local/include/opencv4/opencv2/opencv.hpp
 	"opencv2/opencv_modules.hpp"
@@ -688,6 +626,9 @@
 1595025820 /usr/local/include/opencv4/opencv2/video/background_segm.hpp
 	"opencv2/core.hpp"
 
+1601062599 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Middleware.h
+	"Vectors.h"
+
 1594930138 /usr/local/include/opencv4/opencv2/tracking/tracker.hpp
 	"opencv2/core.hpp"
 	"opencv2/imgproc/types_c.h"
@@ -727,4 +668,42 @@
 
 1594930138 /usr/local/include/opencv4/opencv2/tracking/onlineBoosting.hpp
 	"opencv2/core.hpp"
+
+1600462485 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/motor.cpp
+	<wiringPi.h>
+	<stdlib.h>
+	"motor.h"
+	"Vectors.h"
+
+1600462485 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/motor.h
+	"Vectors.h"
+
+1600366876 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Motors.cpp
+	"Motors.h"
+
+1600366876 /home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Motors.h
+	"Vectors.h"
+
+1599243951 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Vectors.cpp
+	<math.h>
+	"Vectors.h"
+
+1601690238 source:/home/pi/Desktop/ADLTS/Image_Testing/ADLTS_Test/Middleware.cpp
+	<iostream>
+	<stdlib.h>
+	<chrono>
+	<thread>
+	<functional>
+	<vector>
+	<fstream>
+	<sstream>
+	<string>
+	<math.h>
+	"Middleware.h"
+	"DetectionSystem.h"
+	<wiringPi.h>
+	"motor.h"
+	<opencv2/core.hpp>
+	<opencv2/highgui.hpp>
+	<opencv2/imgcodecs.hpp>
 
