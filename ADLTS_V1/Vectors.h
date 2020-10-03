@@ -155,3 +155,4 @@ float DotProduct2D(Vector2 V1, Vector2 V2);
 Vector2 Normalized2D(Vector2 V);
 Vector2 ProjectionOf_U_Onto_V(Vector2 U, Vector2 V);
 Vector2 Clamp(Vector2 U, Vector2 V);
+float Distance2D(Vector2 U, Vector2 V);

@@ -14,9 +14,13 @@
 //#include <opencv2/opencv.hpp>
 #include "DetectionSystem.h"
 #include <wiringPi.h>
-#include <cstddef.h>
+//#include <cstddef.h>
 #include "motor.h"
 
+cv::VideoCapture cap;
+cv::Mat frame;
+double timer;
+Vector2 droneCartesianCoord;
 unsigned int FPS; //frames per second
 float FieldOfView; //Field of view
 
@@ -44,6 +48,8 @@ bool CalibrationMode = 0;
 Vector2 CalibrationModeAngles;
 
 int trackerType = 0;
+bool canTrack = false; //If the drone is expected to be far away from the previous position then we need detect the drone. can't track 
+float maxTrackingDistance;
 
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
@@ -59,13 +65,22 @@ int main()
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
 	
 	//Prevent the program from ending
-	while (!GetAsyncKeyState(VK_RETURN))
-	{	
+	while (std::cin.get() != '\n')
+	{
 		//Break loop if return key is pressed
 	}
 }
 
 void Start() {
+	// Opens camera module
+    cap.open(0);
+    // Checks if camera opened successfully
+    if (!cap.isOpened())
+    {
+        std::cerr << "ERROR: Unable to open the camera" << std::endl;
+        exit(0);
+    }
+	
 	//Read parameters from Middleware_Config.txt file
 	
 	std::string line;
@@ -107,6 +122,7 @@ void Start() {
 	CalibrationModeAngles.x = atof(lines[n++].c_str()); //float
 	CalibrationModeAngles.y = atof(lines[n++].c_str()); //float
 	trackerType = stoi(lines[n++]); //int
+	maxTrackingDistance = atof(lines[n++].c_str()); //float
 
 	if(n + 1 == lines.size()) {
 		std::cout << "Successfully read parameters from " << fileName << std::endl;
@@ -132,6 +148,14 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
 				func();
 				std::this_thread::sleep_until(x);
+
+				// Calculate frame rate
+                float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
+                // Display fps in window
+                cv::putText(frame, ("FPS: " + std::to_string(int(fps))), cv::Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
+                // Display video on screen
+				imshow("Live Feed", frame);
+                cv::waitKey(1);
 			}
 		}).detach();
 }
@@ -140,7 +164,6 @@ void FixedUpdate()
 {
 	std::cout << "New Frame Starts"<< std::endl;
 
-	Vector2 droneCartesiannCoord;
 	bool onScreen;
 
 	if (CalibrationMode) 
@@ -150,11 +173,11 @@ void FixedUpdate()
 	}
 	else
 	{
-		onScreen = FindDrone(droneCartesiannCoord, trackerType);
+		onScreen = FindDrone(droneCartesianCoord, trackerType);
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition = droneCartesiannCoord + Vector2(center.x, -center.y); // If droneCartesianCoord's center is at the bottom left corner, then shift to center
+	Vector2 targetPosition = droneCartesianCoord + Vector2(center.x, -center.y); // If droneCartesianCoord's center is at the bottom left corner, then shift to center
 
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
@@ -168,7 +191,10 @@ void FixedUpdate()
 		{ //lost visual for more than 1 second
 			isFirstRotation = true;
 			velocity = Vector2(0, 0); //reset velocity vector to (0,0)
+			return; //skip this frame to stop turret from turning indefinitely until drone is detected again.
 		}
+		//Delete this return for final build:
+		return;
 	}
 
 
@@ -198,6 +224,7 @@ void FixedUpdate()
 		else 
 		{
 			isFirstRotation = false;
+			canTrack = Distance2D(targetPosition, prevTargetPos) < maxTrackingDistance;
 			RotateTowards(targetPosition + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition;
 		}

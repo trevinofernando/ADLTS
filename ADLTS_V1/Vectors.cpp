@@ -28,7 +28,7 @@ float DotProduct2D(Vector2 V1, Vector2 V2)
 Vector2 Normalized2D(Vector2 V)
 {
 	/// Returns a vector in the same direction with a magnitude of 1.
-	float magnitude = (float) sqrt(V.x * V.x + V.y * V.y);
+	float magnitude = (float) sqrt((V.x * V.x) + (V.y * V.y));
 	if (magnitude == 0)// Check for 0 before division
 		return Vector2(0, 0);
 	return Vector2(V.x / magnitude, V.y / magnitude);
@@ -43,4 +43,9 @@ Vector2 ProjectionOf_U_Onto_V(Vector2 U, Vector2 V)
 Vector2 Clamp(Vector2 U, Vector2 V)
 {
 	return Vector2((U.x > V.x ? U.x : V.x), (U.y > V.y ? U.y : V.y));
+}
+
+float Distance2D(Vector2 U, Vector2 V)
+{
+	return (float)sqrt((U.x - V.x) * (U.x - V.x) + (U.y - V.y) * (U.y - V.y));
 }
