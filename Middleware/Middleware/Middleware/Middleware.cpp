@@ -30,6 +30,7 @@ float cosOfMaxDegreeChange;
 
 
 Vector2 velocity = Vector2(0, 0);
+Vector2 prevVelocity = Vector2(0, 0);
 Vector2 prevTargetPos = Vector2(0, 0);
 
 Vector2 SCREENSIZE;
@@ -203,7 +204,7 @@ void FixedUpdate()
 
 		cyclesSinceLastDetectionOfDrone = 1; //Reset counter. This need to be reset AFTER the velocity is calculated for the current frame.
 	}
-	else//Drone Was NOT Detected On This Frame
+	else if(predictVelocity)//Drone Was NOT Detected On This Frame
 	{
 		//Move to future position assuming constant velocity
 		RotateTowards(velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
