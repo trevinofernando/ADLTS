@@ -3,7 +3,7 @@
 
 
 //Frames per second:
-  int FPS = 30
+  int FPS = 1
 
 //Camera Field of View:
   FieldOfView = 62
@@ -29,11 +29,14 @@
   int offsetVertical = 0
 
 //Calibration Mode for feeding middleware with known angles, ignoring Detection system.
-	bool CalibrationMode = 0
+	bool CalibrationMode = 1
 
 //Calibration Mode Angles: This are known angles for calibration. slow frame rate for better measurement
-	int CalibrationModeAngles.x = 5
-	int CalibrationModeAngles.y = 5
+	int CalibrationModeAngles.x = 90
+	int CalibrationModeAngles.y = 0
 
 //Tracker type {0 is "", 1 is "", 2 is "", 4 is "MedianFlow"}
 	int trackerType = 4
+
+//Maxium tracking distance in pixels between drone positions between frames for detection system to optimize with tracking
+	maxTrackingDistance = 10

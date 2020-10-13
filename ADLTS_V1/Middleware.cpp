@@ -3,7 +3,6 @@
 #include <chrono>
 #include <thread>
 #include <functional>
-#include <Windows.h>
 #include <vector>
 #include <fstream>
 #include <sstream>
@@ -11,7 +10,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "Middleware.h"
-//#include <opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>
 #include "DetectionSystem.h"
 #include <wiringPi.h>
 //#include <cstddef.h>
@@ -48,7 +47,7 @@ bool CalibrationMode = 0;
 Vector2 CalibrationModeAngles;
 
 int trackerType = 0;
-bool canTrack = false; //If the drone is expected to be far away from the previous position then we need detect the drone. can't track 
+bool canTrack = false; //If the drone is expected to be far away from the previous position then we need detect the drone. can't track
 float maxTrackingDistance;
 
 const double DegToRad = M_PI / 180;
@@ -63,7 +62,7 @@ int main()
 	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
-	
+
 	//Prevent the program from ending
 	while (std::cin.get() != '\n')
 	{
@@ -80,9 +79,9 @@ void Start() {
         std::cerr << "ERROR: Unable to open the camera" << std::endl;
         exit(0);
     }
-	
+
 	//Read parameters from Middleware_Config.txt file
-	
+
 	std::string line;
 	std::vector<std::string> lines;
 
@@ -96,7 +95,7 @@ void Start() {
 	}
 
 	while (std::getline(myFile, line)) {
-		if (line._Equal("") || line.find("//") != std::string::npos) {
+		if (line == "" || line.find("//") != std::string::npos) {
 			continue;
 		}
 		//Grab everything after the '=' sign
@@ -122,12 +121,12 @@ void Start() {
 	CalibrationModeAngles.x = atof(lines[n++].c_str()); //float
 	CalibrationModeAngles.y = atof(lines[n++].c_str()); //float
 	trackerType = stoi(lines[n++]); //int
-	maxTrackingDistance = atof(lines[n++].c_str()); //float
+	maxTrackingDistance = atof(lines[n].c_str()); //float
 
-	if(n + 1 == lines.size()) {
+	if(n == lines.size()) {
 		std::cout << "Successfully read parameters from " << fileName << std::endl;
 	}
-	else if(n + 1 <= lines.size()) {
+	else if(n <= lines.size()) {
 		std::cout << "Warning! It seems " << fileName << " has more parameters than assigned here." << std::endl;
 	}
 	else {
@@ -146,6 +145,7 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 			while (true)
 			{
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+                cap >> frame;
 				func();
 				std::this_thread::sleep_until(x);
 
@@ -166,14 +166,14 @@ void FixedUpdate()
 
 	bool onScreen;
 
-	if (CalibrationMode) 
+	if (CalibrationMode)
 	{
 		RotateTowards(OFFSET_CAM, FieldOfView, SCREENSIZE);
 		return;
 	}
 	else
 	{
-		onScreen = FindDrone(droneCartesianCoord, trackerType);
+		onScreen = FindDrone(frame, trackerType);
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
@@ -187,7 +187,7 @@ void FixedUpdate()
 		DroneWasDetectedOnThisFrame = false;
 		cyclesSinceLastDetectionOfDrone++;
 
-		if (cyclesSinceLastDetectionOfDrone > FPS) 
+		if (cyclesSinceLastDetectionOfDrone > FPS)
 		{ //lost visual for more than 1 second
 			isFirstRotation = true;
 			velocity = Vector2(0, 0); //reset velocity vector to (0,0)
@@ -198,10 +198,10 @@ void FixedUpdate()
 	}
 
 
-	if (DroneWasDetectedOnThisFrame) 
+	if (DroneWasDetectedOnThisFrame)
 	{
 
-		if (noiseDampening && prevTargetPos != Vector2(0, 0)) //If prevTargetPos = 0 (or minimal) then object is not currently moving so no restrictions on movement direction 
+		if (noiseDampening && prevTargetPos != Vector2(0, 0)) //If prevTargetPos = 0 (or minimal) then object is not currently moving so no restrictions on movement direction
 		{
 			targetPosition = ReduceNoise(targetPosition, prevTargetPos);
 		}
@@ -215,13 +215,13 @@ void FixedUpdate()
 			}
 			else
 			{
-				//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new 
+				//Divide targetPosition by cyclesSinceLastDetectionOfDrone to get the new
 				velocity = (targetPosition / cyclesSinceLastDetectionOfDrone) + velocity;
 			}
 			RotateTowards(targetPosition + velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
 			prevTargetPos = targetPosition + velocity;
 		}
-		else 
+		else
 		{
 			isFirstRotation = false;
 			canTrack = Distance2D(targetPosition, prevTargetPos) < maxTrackingDistance;
@@ -252,8 +252,8 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 
 	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
-	motors -> RotateMotors(Vector2(angleX, angleY)); 
-	
+	motor -> RotateMotors(Vector2(angleX, angleY));
+
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
@@ -282,7 +282,7 @@ Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
 			//Flip vectors since targetPosition is on the opposite side
 			rotatedVectorCounterClockwise = rotatedVectorCounterClockwise * -1;
 			rotatedVectorClockwise = rotatedVectorClockwise * -1;
-			//prev_targetPosition *= -1;                       
+			//prev_targetPosition *= -1;
 		}
 		else//(cosOfAnglePhi == 0) Then angle is 90 degrees
 		{
@@ -296,12 +296,12 @@ Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
 
 		if (cosOfCounterClockwiseVector > cosOfClockwiseVector)
 		{
-			//Then counter clockwise vector is closer 
+			//Then counter clockwise vector is closer
 			return ProjectionOf_U_Onto_V(targetPosition, rotatedVectorCounterClockwise);
 		}
 		else
 		{
-			//Then clockwise vector is closer 
+			//Then clockwise vector is closer
 			return ProjectionOf_U_Onto_V(targetPosition, rotatedVectorClockwise);
 		}
 	}
@@ -312,7 +312,7 @@ Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
 	}
 }
 
-float FPStoMilliseconds(unsigned int fps) 
+float FPStoMilliseconds(unsigned int fps)
 {
 	return (float)(1000 / fps);
 }

@@ -33,7 +33,7 @@
 	"opencv2/video.hpp"
 	"opencv2/videoio.hpp"
 
-1599106973 /usr/local/include/opencv4/opencv2/opencv_modules.hpp
+1602619134 /usr/local/include/opencv4/opencv2/opencv_modules.hpp
 
 1595025820 /usr/local/include/opencv4/opencv2/core.hpp
 	"opencv2/core/cvdef.h"
@@ -703,4 +703,59 @@
 
 1600488040 /home/pi/Desktop/ADLTS/ADLTS_V1/Middleware.h
 	"Vectors.h"
+
+1602625629 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/DetectionSystem.cpp
+	<iostream>
+	<math.h>
+	<chrono>
+	"DetectionSystem.h"
+	"Middleware.h"
+	<opencv2/tracking/tracker.hpp>
+
+1602625629 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/DetectionSystem.h
+	"Vectors.h"
+	<stdio.h>
+	<opencv2/opencv.hpp>
+	<opencv2/highgui.hpp>
+	<opencv2/imgproc.hpp>
+
+1602625629 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Vectors.h
+
+1602625629 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Middleware.h
+	"Vectors.h"
+
+1602626208 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/motor.cpp
+	<wiringPi.h>
+	<stdlib.h>
+	"motor.h"
+	"Vectors.h"
+
+1602625629 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/motor.h
+	"Vectors.h"
+
+1602625629 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Motors.cpp
+	"Motors.h"
+
+1602625629 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Motors.h
+	"Vectors.h"
+
+1602625629 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Vectors.cpp
+	<math.h>
+	"Vectors.h"
+
+1602626237 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Middleware.cpp
+	<iostream>
+	<stdlib.h>
+	<chrono>
+	<thread>
+	<functional>
+	<vector>
+	<fstream>
+	<sstream>
+	<string>
+	<math.h>
+	"Middleware.h"
+	"DetectionSystem.h"
+	<wiringPi.h>
+	"motor.h"
 
