@@ -80,6 +80,7 @@ void Start() {
         exit(0);
     }
 
+
 	//Read parameters from Middleware_Config.txt file
 
 	std::string line;
@@ -146,6 +147,9 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 			{
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
                 cap >> frame;
+                if (frame.empty())
+                    exit(0);
+
 				func();
 				std::this_thread::sleep_until(x);
 
@@ -155,7 +159,9 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
                 cv::putText(frame, ("FPS: " + std::to_string(int(fps))), cv::Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
                 // Display video on screen
 				imshow("Live Feed", frame);
-                cv::waitKey(1);
+				if (cv::waitKey(1) == 27)
+                    exit(0);
+                //cv::waitKey(1);
 			}
 		}).detach();
 }
@@ -177,7 +183,9 @@ void FixedUpdate()
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition = droneCartesianCoord + Vector2(center.x, -center.y); // If droneCartesianCoord's center is at the bottom left corner, then shift to center
+	Vector2 targetPosition;
+	targetPosition.x = -(droneCartesianCoord.x - center.x);
+	targetPosition.y = droneCartesianCoord.y - center.y;
 
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
