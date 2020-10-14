@@ -38,6 +38,7 @@ Vector2 prevTargetPos = Vector2(0, 0);
 
 Vector2 SCREENSIZE;
 Vector2 OFFSET_CAM;
+Vector2 MotorsDir;
 
 bool isFirstRotation = true;
 bool DroneWasDetectedOnThisFrame;
@@ -118,6 +119,8 @@ void Start() {
 	SCREENSIZE.y = stoi(lines[n++]); //int
 	OFFSET_CAM.x = stoi(lines[n++]); //int
 	OFFSET_CAM.y = stoi(lines[n++]); //int
+	MotorsDir.x = atof(lines[n++].c_str()); //float
+	MotorsDir.y = atof(lines[n++].c_str()); //float
 	CalibrationMode = stoi(lines[n++]); //bool
 	CalibrationModeAngles.x = atof(lines[n++].c_str()); //float
 	CalibrationModeAngles.y = atof(lines[n++].c_str()); //float
@@ -183,10 +186,7 @@ void FixedUpdate()
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition;
-	targetPosition.x = -(droneCartesianCoord.x - center.x);
-	targetPosition.y = droneCartesianCoord.y - center.y;
-
+	Vector2 targetPosition = droneCartesianCoord - Vector2(center.x, center.y);
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
@@ -250,8 +250,9 @@ void FixedUpdate()
 
 void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize)
 {
-	float angleX = targetPosition.x * fieldOfView / screenSize.x;
-	float angleY = targetPosition.y * fieldOfView / screenSize.y;
+	float degreesPerPixel = fieldOfView / screenSize.x;
+	float angleX = MotorsDir.x * targetPosition.x * degreesPerPixel;
+	float angleY = MotorsDir.y * targetPosition.y * degreesPerPixel;
 	if (CalibrationMode)
 	{
 		angleX = CalibrationModeAngles.x;
