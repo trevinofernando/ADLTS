@@ -25,8 +25,12 @@
   int SCREENSIZE On Y = 480
 
 //Offset of camera in pixels (+ for right or up and - for left and down):
-  int offsetHorizontal = 0
-  int offsetVertical = 0
+  int OFFSET_CAM.x = 0
+  int OFFSET_CAM.y = 0
+
+//Motors direction (flip between 1 and -1 to invert rotation direction):
+  int MotorsDir.x = -1
+  int MotorsDir.y = 1
 
 //Calibration Mode for feeding middleware with known angles, ignoring Detection system.
 	bool CalibrationMode = 0
