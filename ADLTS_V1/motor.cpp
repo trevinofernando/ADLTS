@@ -17,9 +17,9 @@ Stepper::Stepper(int number_of_steps, int motor_pin_1, int motor_pin_2)
   // setup the pins on the microcontroller:
   pinMode(this->motor_pin_1, OUTPUT);
   pinMode(this->motor_pin_2, OUTPUT);
-  
+
   //setSpeed
-  this->setSpeed(450);
+  this->setSpeed(350);
 }
 
 

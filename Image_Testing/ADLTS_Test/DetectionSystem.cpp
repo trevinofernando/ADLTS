@@ -83,14 +83,14 @@ bool Detect(cv::Mat frame)
     // 7 - threshold for center detection
     // 8 - minimum radius that will be detected
     // 9 - maximum radius that will be detected
-    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 20, 20, 5, 50);
+    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 20, 20, 0, 50);
 
     if (circles.size() > 0)
     {
         auto end = chrono::high_resolution_clock::now();
         chrono::duration<double, milli> detectTime = (end - start)/1000;
         cout << "Time to detect: " << detectTime.count() << "seconds" << endl;
-        //isCircle = true;
+        isCircle = true;
         droneCartesianCoord.x = float(cvRound(circles[0][0]));
         droneCartesianCoord.y = float(cvRound(circles[0][1]));
         int radius = cvRound(circles[0][2]);
@@ -100,7 +100,7 @@ bool Detect(cv::Mat frame)
         Rect2d box(cvRound(circles[0][0]) - radius, cvRound(circles[0][1]) - radius, bboxDim, bboxDim);
         bbox = box;
 
-        cout << "Centroid: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
+        //cout << "Centroid: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
 
         // Draw circle on image
         Point center(droneCartesianCoord.x, droneCartesianCoord.y);

@@ -21,6 +21,7 @@
 std::vector<std::string> grayCircles;
 std::vector<std::string> Radius20;
 std::vector<std::string> allCircles;
+std::vector<std::string> testCircles;
 char* nextImage;
 int next = 0;
 
@@ -166,6 +167,14 @@ void SetInput()
         allCircles.push_back(lines.at(i));
     }
 
+    // Smallest radius detected is 10 pixels in 640x480 image
+    // Can track from 80 to 90 but loses tracker afterwards
+    testCircles.push_back("B10(80-80).png");
+    testCircles.push_back("B10(90-80).png");
+    testCircles.push_back("B10(100-80).png");
+    testCircles.push_back("B10(110-80).png");
+
+
     CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
 
     while (std::cin.get() != '\n')
@@ -224,9 +233,10 @@ void FixedUpdate()
 	std::cout << "New Image Starts"<< std::endl;
 
     // Grabs next image
-    if (next == allCircles.size())
+    if (next == testCircles.size())
         exit(0);
-    nextImage = strdup(allCircles.at(next++).c_str());
+    nextImage = strdup(testCircles.at(next++).c_str());
+    std::cout << "Next image: " << nextImage << std::endl;
     frame = cv::imread(nextImage);
     // Checks if frame was accessed
     if (frame.empty())

@@ -37,3 +37,6 @@
 
 //Tracker type {0 is "", 1 is "", 2 is ""}
 	int trackerType = 0
+
+//Maxium tracking distance in pixels between drone positions between frames for detection system to optimize with tracking
+	maxTrackingDistance = 10
