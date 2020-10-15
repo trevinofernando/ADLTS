@@ -192,7 +192,9 @@ void FixedUpdate()
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition = droneCartesianCoord - Vector2(center.x, center.y);
+	Vector2 targetPosition;
+	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
+	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
