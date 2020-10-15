@@ -16,6 +16,8 @@
 //#include <cstddef.h>
 #include "motor.h"
 
+int counter = 0;
+
 cv::VideoCapture cap;
 cv::Mat frame;
 double timer;
@@ -149,19 +151,23 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 			while (true)
 			{
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+				counter++;
                 cap >> frame;
                 if (frame.empty())
                     exit(0);
 
 				func();
+
 				std::this_thread::sleep_until(x);
 
 				// Calculate frame rate
                 float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
                 // Display fps in window
                 cv::putText(frame, ("FPS: " + std::to_string(int(fps))), cv::Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
+                //circle(frame, (320, 240), 1, Scalar(255, 0, 0), 2, 1);
                 // Display video on screen
 				imshow("Live Feed", frame);
+				std::cout << (counter) << std::endl;
 				if (cv::waitKey(1) == 27)
                     exit(0);
                 //cv::waitKey(1);

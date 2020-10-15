@@ -3,7 +3,7 @@
 
 
 //Frames per second:
-  int FPS = 20
+  int FPS = 10
 
 //Camera Field of View:
   FieldOfView = 62
@@ -18,7 +18,7 @@
   bool noiseDampening = 0
 
 //Only used if Noise Dampening equals 1. Max degree to turn in one frame:
-  float velocityMaxDegreeChange = 1
+  float velocityMaxDegreeChange = .2
 
 //Dimensions of the Screen:
   int SCREENSIZE On X = 640
