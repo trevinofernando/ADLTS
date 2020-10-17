@@ -17,6 +17,7 @@
 #include "motor.h"
 
 int counter = 0;
+bool completeRotation = true;
 
 cv::VideoCapture cap;
 cv::Mat frame;
@@ -64,12 +65,13 @@ int main()
 {
 	Start();
 
-	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
+	//CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
 
 	//Prevent the program from ending
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
+		FixedUpdate();
 	}
 }
 
@@ -151,7 +153,6 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 			while (true)
 			{
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
-				counter++;
                 cap >> frame;
                 if (frame.empty())
                     exit(0);
@@ -192,9 +193,25 @@ void FixedUpdate()
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition;
+    Vector2 targetPosition;
+    /*switch (counter % 2)
+    {
+        case 0: {
+                targetPosition = Vector2(-10, 10);
+                break;
+                }
+        case 1: {
+                targetPosition = Vector2(10, -10);
+                break;
+                }
+        default:
+        {}
+    }
+    std::cout << "counter = " << counter << std::endl;*/
+    counter++;
 	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
 	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
+    std::cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << std::endl;
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
@@ -268,8 +285,12 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	}
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 
+	//while (!completeRotation)
+	//{}
 	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
+	//completeRotation = false;
 	motor -> RotateMotors(Vector2(angleX, angleY));
+
 
 }
 
