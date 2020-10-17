@@ -16,6 +16,8 @@
 //#include <cstddef.h>
 #include "motor.h"
 
+#define DEADZONE 10
+
 int counter = 0;
 bool completeRotation = true;
 
@@ -65,13 +67,13 @@ int main()
 {
 	Start();
 
-	//CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
+	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
 
 	//Prevent the program from ending
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
-		FixedUpdate();
+		//FixedUpdate();
 	}
 }
 
@@ -194,6 +196,15 @@ void FixedUpdate()
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
     Vector2 targetPosition;
+    counter++;
+	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
+	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
+    
+	if(Distance2D(prevTargetPos, targetPosition) < DEADZONE){
+		prevTargetPos = Vector2(0, 0); //No action
+		return; //Kill Queue if prev position is withing a radius of [DEADZONE] pixels
+	}
+	std::cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << std::endl;
     /*switch (counter % 2)
     {
         case 0: {
@@ -208,10 +219,6 @@ void FixedUpdate()
         {}
     }
     std::cout << "counter = " << counter << std::endl;*/
-    counter++;
-	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
-	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
-    std::cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << std::endl;
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
