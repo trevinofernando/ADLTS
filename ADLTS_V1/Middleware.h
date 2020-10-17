@@ -3,6 +3,7 @@
 #include "Vectors.h"
 
 extern Vector2 droneCartesianCoord;
+extern bool completeRotation;
 
 void Start();
 void FixedUpdate();

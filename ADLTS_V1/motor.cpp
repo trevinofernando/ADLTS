@@ -19,7 +19,7 @@ Stepper::Stepper(int number_of_steps, int motor_pin_1, int motor_pin_2)
   pinMode(this->motor_pin_2, OUTPUT);
 
   //setSpeed
-  this->setSpeed(450);
+  this->setSpeed(50);
 }
 
 
@@ -84,6 +84,7 @@ void Stepper::step(int steps_to_move)
       stepMotor(this->step_number % 4);
     }
   }
+    //completeRotation = true;
 }
 
 /*
