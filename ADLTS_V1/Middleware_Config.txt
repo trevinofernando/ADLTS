@@ -3,7 +3,7 @@
 
 
 //Frames per second:
-  int FPS = 5
+  int FPS = 10
 
 //Camera Field of View:
   FieldOfView = 62

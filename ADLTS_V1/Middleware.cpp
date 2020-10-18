@@ -16,7 +16,7 @@
 //#include <cstddef.h>
 #include "motor.h"
 
-#define DEADZONE 10
+#define DEADZONE 75
 
 int counter = 0;
 bool completeRotation = true;
@@ -199,7 +199,7 @@ void FixedUpdate()
     counter++;
 	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
 	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
-    
+
 	if(Distance2D(prevTargetPos, targetPosition) < DEADZONE){
 		prevTargetPos = Vector2(0, 0); //No action
 		return; //Kill Queue if prev position is withing a radius of [DEADZONE] pixels

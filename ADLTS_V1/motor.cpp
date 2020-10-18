@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "motor.h"
 #include "Vectors.h"
+#include <iostream>
 
 Stepper::Stepper(int number_of_steps, int motor_pin_1, int motor_pin_2)
 {
@@ -92,6 +93,7 @@ void Stepper::step(int steps_to_move)
  */
 void Stepper::stepMotor(int thisStep)
 {
+    std::cout << "StepNum: " << thisStep << std::endl;
     switch (thisStep) {
       case 0:  // 01
         digitalWrite(motor_pin_1, LOW);

@@ -43,8 +43,6 @@
 		<Unit filename="Middleware.cpp" />
 		<Unit filename="Middleware.h" />
 		<Unit filename="Middleware_Config.txt" />
-		<Unit filename="Motors.cpp" />
-		<Unit filename="Motors.h" />
 		<Unit filename="Vectors.cpp" />
 		<Unit filename="Vectors.h" />
 		<Unit filename="motor.cpp" />
