@@ -94,8 +94,6 @@ bool Detect(cv::Mat frame)
         Rect2d box(cvRound(circles[0][0]) - radius, cvRound(circles[0][1]) - radius, bboxDim, bboxDim);
         bbox = box;
 
-        cout << "Centroid: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
-
         // Draw circle on image
         Point center(droneCartesianCoord.x, droneCartesianCoord.y);
         circle(frame, center, radius, Scalar(255, 0, 0), 2, 1);
@@ -121,8 +119,6 @@ bool Track(cv::Mat frame)
     // Update central coordinate
     droneCartesianCoord.x = bbox.x + bbox.width/2;
     droneCartesianCoord.y = bbox.y + bbox.height/2;
-    // Print central coordinate of bounding box
-    cout << "Centroid: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
 
     return true;
 }

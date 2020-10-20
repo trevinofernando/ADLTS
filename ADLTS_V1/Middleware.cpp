@@ -18,7 +18,8 @@
 
 #define DEADZONE 75
 
-int counter = 0;
+using namespace std;
+
 bool completeRotation = true;
 
 cv::VideoCapture cap;
@@ -58,7 +59,6 @@ float maxTrackingDistance;
 
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
-//Rect2d bbox;
 
 StepperMotors *motor = NULL;
 
@@ -155,6 +155,8 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 			while (true)
 			{
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+                timer = double(cv::getTickCount());
+
                 cap >> frame;
                 if (frame.empty())
                     exit(0);
@@ -167,13 +169,11 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
                 float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
                 // Display fps in window
                 cv::putText(frame, ("FPS: " + std::to_string(int(fps))), cv::Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
-                //circle(frame, (320, 240), 1, Scalar(255, 0, 0), 2, 1);
+
                 // Display video on screen
 				imshow("Live Feed", frame);
-				std::cout << (counter) << std::endl;
 				if (cv::waitKey(1) == 27)
                     exit(0);
-                //cv::waitKey(1);
 			}
 		}).detach();
 }
@@ -195,30 +195,20 @@ void FixedUpdate()
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
+
     Vector2 targetPosition;
-    counter++;
 	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
 	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
+    if (onScreen)
+    {
+        cout << "Drone Coord: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
+        cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << endl;
+    }
 
 	if(Distance2D(prevTargetPos, targetPosition) < DEADZONE){
 		prevTargetPos = Vector2(0, 0); //No action
 		return; //Kill Queue if prev position is withing a radius of [DEADZONE] pixels
 	}
-	std::cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << std::endl;
-    /*switch (counter % 2)
-    {
-        case 0: {
-                targetPosition = Vector2(-10, 10);
-                break;
-                }
-        case 1: {
-                targetPosition = Vector2(10, -10);
-                break;
-                }
-        default:
-        {}
-    }
-    std::cout << "counter = " << counter << std::endl;*/
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
@@ -297,8 +287,6 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
 	//completeRotation = false;
 	motor -> RotateMotors(Vector2(angleX, angleY));
-
-
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
