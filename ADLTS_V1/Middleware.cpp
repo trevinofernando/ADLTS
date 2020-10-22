@@ -87,7 +87,6 @@ void Start() {
         exit(0);
     }
 
-
 	//Read parameters from Middleware_Config.txt file
 
 	std::string line;
@@ -157,6 +156,8 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
                 timer = double(cv::getTickCount());
 
+                for (int j = 0; j < 6; j++)
+                    cap.grab();
                 cap >> frame;
                 if (frame.empty())
                     exit(0);
@@ -174,6 +175,7 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 				imshow("Live Feed", frame);
 				if (cv::waitKey(1) == 27)
                     exit(0);
+                //cv::waitKey(0);
 			}
 		}).detach();
 }
@@ -192,6 +194,7 @@ void FixedUpdate()
 	else
 	{
 		onScreen = FindDrone(frame, trackerType);
+		//onScreen = true;
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
@@ -199,16 +202,21 @@ void FixedUpdate()
     Vector2 targetPosition;
 	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
 	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
+    // Random number between -25 and 25
+    //targetPosition.x = (rand() % 100)-50;
+    //targetPosition.y = (rand() % 100)-50;
+
     if (onScreen)
     {
         cout << "Drone Coord: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
         cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << endl;
     }
 
-	if(Distance2D(prevTargetPos, targetPosition) < DEADZONE){
+	/*if(Distance2D(prevTargetPos, targetPosition) < DEADZONE){
+        cout << "Killing queue" << endl;
 		prevTargetPos = Vector2(0, 0); //No action
 		return; //Kill Queue if prev position is withing a radius of [DEADZONE] pixels
-	}
+	}*/
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)

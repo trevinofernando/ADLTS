@@ -53,8 +53,8 @@ void Stepper::step(int steps_to_move)
   int steps_left = abs(steps_to_move);  // how many steps to take
 
   // determine direction based on whether steps_to_mode is + or -:
-  if (steps_to_move > 0) { this->direction = 1; }
-  if (steps_to_move < 0) { this->direction = 0; }
+  if (steps_to_move > 0) { this->direction = 0; }
+  if (steps_to_move < 0) { this->direction = 1; }
 
 
   // decrement the number of steps, moving one step each time:

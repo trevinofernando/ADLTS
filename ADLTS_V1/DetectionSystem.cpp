@@ -77,7 +77,7 @@ bool Detect(cv::Mat frame)
     // 7 - threshold for center detection
     // 8 - minimum radius that will be detected
     // 9 - maximum radius that will be detected
-    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 80, 50, 15, 100);
+    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 50, 50, 15, 100);
 
     if (circles.size() > 0)
     {
@@ -112,7 +112,10 @@ bool Detect(cv::Mat frame)
 bool Track(cv::Mat frame)
 {
     // Updates tracker with previous bounding box coordinates
-    tracker->update(frame,bbox);
+    if (tracker->update(frame,bbox))
+        cout << "Successful tracking" << endl;
+    else
+        cout << "Tracker didn't update" << endl;
     // Draws a rectangle around the new bounding box
     rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
 
