@@ -13,6 +13,7 @@ Rect2d bbox;
 bool initialized = false;
 bool isCircle;
 int bboxDim;
+int numFramesMissed;
 
 bool FindDrone(cv::Mat frame, int trackerNum)
 {
@@ -30,6 +31,7 @@ void Init(cv::Mat frame, int trackerNum)
     cout << "Initializing detection..." << endl;
     initialized = true;
     isCircle = false;
+    numFramesMissed = 0;
 
     string trackerTypes[8] = {"BOOSTING", "MIL", "KCF", "TLD", "MEDIANFLOW",
     "MOSSE", "CSRT"};
@@ -113,15 +115,26 @@ bool Track(cv::Mat frame)
 {
     // Updates tracker with previous bounding box coordinates
     if (tracker->update(frame,bbox))
+    {
         cout << "Successful tracking" << endl;
+        numFramesMissed = 0;
+    }
     else
+    {
         cout << "Tracker didn't update" << endl;
+        numFramesMissed++;
+    }
     // Draws a rectangle around the new bounding box
     rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
 
     // Update central coordinate
     droneCartesianCoord.x = bbox.x + bbox.width/2;
     droneCartesianCoord.y = bbox.y + bbox.height/2;
+
+    if (numFramesMissed > 3)
+    {
+        isCircle = false;
+    }
 
     return true;
 }

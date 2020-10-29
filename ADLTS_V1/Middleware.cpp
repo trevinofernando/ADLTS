@@ -60,6 +60,13 @@ float maxTrackingDistance;
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
 
+// Variables used to detect if motors should stop moving in a given direction based on how far its rotated
+Vector2 totalRotation;
+float maxRotXLeft = -120; // 120 deg left
+float maxRotXRight = 120;
+float maxRotYUp = 90; // 90 deg up (looking directly up)
+float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
+
 StepperMotors *motor = NULL;
 
 
@@ -73,7 +80,6 @@ int main()
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
-		//FixedUpdate();
 	}
 }
 
@@ -142,6 +148,9 @@ void Start() {
 		std::cout << "Error " << fileName << " is missing parameters. Ending program." << std::endl;
 		exit(EXIT_FAILURE);
 	}
+    // Initializes total motor rotation to 0 for x and y motors
+	totalRotation.x = 0;
+	totalRotation.y = 0;
 
 	wiringPiSetup();
 	motor = new StepperMotors();
@@ -283,6 +292,7 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	float degreesPerPixel = fieldOfView / screenSize.x;
 	float angleX = MotorsDir.x * targetPosition.x * degreesPerPixel;
 	float angleY = MotorsDir.y * targetPosition.y * degreesPerPixel;
+
 	if (CalibrationMode)
 	{
 		angleX = CalibrationModeAngles.x;
@@ -290,11 +300,39 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	}
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 
-	//while (!completeRotation)
-	//{}
-	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
-	//completeRotation = false;
-	motor -> RotateMotors(Vector2(angleX, angleY));
+	totalRotation.x += angleX;
+	totalRotation.y += angleY;
+
+	//maxRotXLeft = -120;
+    //maxRotXRight = 120;
+    //maxRotYUp = 90;
+    //maxRotYDown = -30;
+
+    // only sends rotation info to motors if it meets all requirements (fails every if statement)
+	if (totalRotation.x <= maxRotXLeft && angleX < 0)
+	{
+        cout << "Can't rotate left anymore" << endl;
+        totalRotation.x -= angleX;
+	}
+	else if (totalRotation.x >= maxRotXRight && angleX > 0)
+    {
+        cout << "Can't rotate right anymore" << endl;
+        totalRotation.x -= angleX;
+    }
+    else if (totalRotation.y >= maxRotYUp && angleY > 0)
+    {
+        cout << "Can't rotate up anymore" << endl;
+        totalRotation.y -= angleY;
+    }
+    else if (totalRotation.y <= maxRotYDown && angleY < 0)
+    {
+        cout << "Can't rotate down anymore" << endl;
+        totalRotation.y -= angleY;
+    }
+    else
+    {
+    	motor -> RotateMotors(Vector2(angleX, angleY));
+    }
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
