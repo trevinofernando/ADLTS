@@ -196,7 +196,7 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 
 void FixedUpdate()
 {
-#ifndef DEBUGING_MODE
+#ifdef DEBUGING_MODE
 	std::cout << "New Frame Starts"<< std::endl;
 #endif
 
@@ -220,7 +220,7 @@ void FixedUpdate()
 
     if (onScreen)
     {
-#ifndef DEBUGING_MODE
+#ifdef DEBUGING_MODE
 		cout << "Drone Coord: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
 		cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << endl;
 #endif
@@ -283,7 +283,7 @@ void FixedUpdate()
 	}
 
 
-#ifndef DEBUGING_MODE
+#ifdef DEBUGING_MODE
 	std::cout << "New Frame Ends"<< std::endl;
 #endif
 }
@@ -299,7 +299,7 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 		angleX = CalibrationModeAngles.x;
 		angleY = CalibrationModeAngles.y;
 	}
-#ifndef DEBUGING_MODE
+#ifdef DEBUGING_MODE
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 #endif
 
