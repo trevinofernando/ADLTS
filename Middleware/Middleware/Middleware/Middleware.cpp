@@ -15,6 +15,7 @@
 #include <wiringPi.h>
 //#include <cstddef.h>
 #include "motor.h"
+#include "IRlaser.h"
 
 #define DEBUGING_MODE 1
 
@@ -81,6 +82,9 @@ int main()
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
+		//Laser code:
+		Shoot(1);
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
 }
 

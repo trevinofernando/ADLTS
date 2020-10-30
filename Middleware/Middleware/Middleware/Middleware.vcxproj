@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IRlaser.cpp" />
     <ClCompile Include="Middleware.cpp" />
     <ClCompile Include="DetectionSystem.cpp" />
     <ClCompile Include="Motors.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DetectionSystem.h" />
+    <ClInclude Include="IRlaser.h" />
     <ClInclude Include="Middleware.h" />
     <ClInclude Include="Motors.h" />
     <ClInclude Include="Vectors.h" />

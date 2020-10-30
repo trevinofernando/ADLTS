@@ -15,8 +15,9 @@
 #include <wiringPi.h>
 //#include <cstddef.h>
 #include "motor.h"
+#include "IRlaser.h"
 
-#define DEADZONE 75
+#define DEBUGING_MODE 1
 
 using namespace std;
 
@@ -62,6 +63,7 @@ const int clockwise = -1, anticlockwise = 1;
 
 // Variables used to detect if motors should stop moving in a given direction based on how far its rotated
 Vector2 totalRotation;
+Vector2 maxRot = Vector2(120, 90);
 float maxRotXLeft = -120; // 120 deg left
 float maxRotXRight = 120;
 float maxRotYUp = 90; // 90 deg up (looking directly up)
@@ -80,6 +82,9 @@ int main()
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
+		//Laser code:
+		Shoot(1);
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
 }
 
@@ -191,7 +196,9 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 
 void FixedUpdate()
 {
+#ifndef DEBUGING_MODE
 	std::cout << "New Frame Starts"<< std::endl;
+#endif
 
 	bool onScreen;
 
@@ -203,7 +210,6 @@ void FixedUpdate()
 	else
 	{
 		onScreen = FindDrone(frame, trackerType);
-		//onScreen = true;
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
@@ -211,21 +217,14 @@ void FixedUpdate()
     Vector2 targetPosition;
 	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
 	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
-    // Random number between -25 and 25
-    //targetPosition.x = (rand() % 100)-50;
-    //targetPosition.y = (rand() % 100)-50;
 
     if (onScreen)
     {
-        cout << "Drone Coord: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
-        cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << endl;
+#ifndef DEBUGING_MODE
+		cout << "Drone Coord: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
+		cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << endl;
+#endif
     }
-
-	/*if(Distance2D(prevTargetPos, targetPosition) < DEADZONE){
-        cout << "Killing queue" << endl;
-		prevTargetPos = Vector2(0, 0); //No action
-		return; //Kill Queue if prev position is withing a radius of [DEADZONE] pixels
-	}*/
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
@@ -234,14 +233,13 @@ void FixedUpdate()
 		DroneWasDetectedOnThisFrame = false;
 		cyclesSinceLastDetectionOfDrone++;
 
-		if (cyclesSinceLastDetectionOfDrone > FPS)
-		{ //lost visual for more than 1 second
-			isFirstRotation = true;
-			velocity = Vector2(0, 0); //reset velocity vector to (0,0)
+		if (!frameCompensation || cyclesSinceLastDetectionOfDrone > FPS / 2.0)
+		{ 
+			//If frame compansation is off, then no movement when drone is not detected
+			//or if lost visual for more than 0.5 seconds
+			ResetVelocityMemory();
 			return; //skip this frame to stop turret from turning indefinitely until drone is detected again.
 		}
-		//Delete this return for final build:
-		return;
 	}
 
 
@@ -284,7 +282,10 @@ void FixedUpdate()
 		RotateTowards(velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
 	}
 
+
+#ifndef DEBUGING_MODE
 	std::cout << "New Frame Ends"<< std::endl;
+#endif
 }
 
 void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize)
@@ -298,40 +299,29 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 		angleX = CalibrationModeAngles.x;
 		angleY = CalibrationModeAngles.y;
 	}
+#ifndef DEBUGING_MODE
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
+#endif
 
 	totalRotation.x += angleX;
 	totalRotation.y += angleY;
 
-	//maxRotXLeft = -120;
-    //maxRotXRight = 120;
-    //maxRotYUp = 90;
-    //maxRotYDown = -30;
-
     // only sends rotation info to motors if it meets all requirements (fails every if statement)
-	if (totalRotation.x <= maxRotXLeft && angleX < 0)
+	if ((totalRotation.x <= maxRotXLeft && angleX < 0) || (totalRotation.x >= maxRotXRight && angleX > 0))
 	{
-        cout << "Can't rotate left anymore" << endl;
+        cout << "WARNING: Can't rotate horizontally anymore" << endl;
         totalRotation.x -= angleX;
+		ResetVelocityMemory();
 	}
-	else if (totalRotation.x >= maxRotXRight && angleX > 0)
+    else if ((totalRotation.y >= maxRotYUp && angleY > 0) || (totalRotation.y <= maxRotYDown && angleY < 0))
     {
-        cout << "Can't rotate right anymore" << endl;
-        totalRotation.x -= angleX;
-    }
-    else if (totalRotation.y >= maxRotYUp && angleY > 0)
-    {
-        cout << "Can't rotate up anymore" << endl;
+        cout << "WARNING: Can't rotate vertically anymore" << endl;
         totalRotation.y -= angleY;
-    }
-    else if (totalRotation.y <= maxRotYDown && angleY < 0)
-    {
-        cout << "Can't rotate down anymore" << endl;
-        totalRotation.y -= angleY;
+		ResetVelocityMemory();
     }
     else
     {
-    	motor -> RotateMotors(Vector2(angleX, angleY));
+		motor->RotateMotors(Vector2(angleX, angleY));
     }
 }
 
@@ -396,3 +386,10 @@ float FPStoMilliseconds(unsigned int fps)
 	return (float)(1000 / fps);
 }
 
+void ResetVelocityMemory()
+{
+	isFirstRotation = true;
+	velocity = Vector2(0, 0); //reset velocity vector to (0,0)
+	prevTargetPos = Vector2(0, 0);
+	return;
+}
