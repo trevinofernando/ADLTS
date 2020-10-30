@@ -16,7 +16,11 @@
 //#include <cstddef.h>
 #include "motor.h"
 
-int counter = 0;
+#define DEBUGING_MODE 1
+
+using namespace std;
+
+bool completeRotation = true;
 
 cv::VideoCapture cap;
 cv::Mat frame;
@@ -55,7 +59,14 @@ float maxTrackingDistance;
 
 const double DegToRad = M_PI / 180;
 const int clockwise = -1, anticlockwise = 1;
-//Rect2d bbox;
+
+// Variables used to detect if motors should stop moving in a given direction based on how far its rotated
+Vector2 totalRotation;
+Vector2 maxRot = Vector2(120, 90);
+float maxRotXLeft = -120; // 120 deg left
+float maxRotXRight = 120;
+float maxRotYUp = 90; // 90 deg up (looking directly up)
+float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
 
 StepperMotors *motor = NULL;
 
@@ -82,7 +93,6 @@ void Start() {
         std::cerr << "ERROR: Unable to open the camera" << std::endl;
         exit(0);
     }
-
 
 	//Read parameters from Middleware_Config.txt file
 
@@ -139,6 +149,9 @@ void Start() {
 		std::cout << "Error " << fileName << " is missing parameters. Ending program." << std::endl;
 		exit(EXIT_FAILURE);
 	}
+    // Initializes total motor rotation to 0 for x and y motors
+	totalRotation.x = 0;
+	totalRotation.y = 0;
 
 	wiringPiSetup();
 	motor = new StepperMotors();
@@ -151,7 +164,10 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 			while (true)
 			{
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
-				counter++;
+                timer = double(cv::getTickCount());
+
+                for (int j = 0; j < 6; j++)
+                    cap.grab();
                 cap >> frame;
                 if (frame.empty())
                     exit(0);
@@ -164,20 +180,21 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
                 float fps = cv::getTickFrequency() / (double(cv::getTickCount()) - timer);
                 // Display fps in window
                 cv::putText(frame, ("FPS: " + std::to_string(int(fps))), cv::Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
-                //circle(frame, (320, 240), 1, Scalar(255, 0, 0), 2, 1);
+
                 // Display video on screen
 				imshow("Live Feed", frame);
-				std::cout << (counter) << std::endl;
 				if (cv::waitKey(1) == 27)
                     exit(0);
-                //cv::waitKey(1);
+                //cv::waitKey(0);
 			}
 		}).detach();
 }
 
 void FixedUpdate()
 {
+#ifndef DEBUGING_MODE
 	std::cout << "New Frame Starts"<< std::endl;
+#endif
 
 	bool onScreen;
 
@@ -192,9 +209,18 @@ void FixedUpdate()
 	}
 
 	Vector2 center = Vector2(SCREENSIZE.x / 2, SCREENSIZE.y / 2); //Can be moved to Start() but screen size might change in the future
-	Vector2 targetPosition;
+
+    Vector2 targetPosition;
 	targetPosition.x = droneCartesianCoord.x - center.x; //subtract x for shifting
 	targetPosition.y = -droneCartesianCoord.y + center.y; //subtract y for shifting then flip result for axis inversion
+
+    if (onScreen)
+    {
+#ifndef DEBUGING_MODE
+		cout << "Drone Coord: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
+		cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << endl;
+#endif
+    }
 
 	DroneWasDetectedOnThisFrame = true; //default flag to true
 	if (!onScreen)
@@ -203,14 +229,13 @@ void FixedUpdate()
 		DroneWasDetectedOnThisFrame = false;
 		cyclesSinceLastDetectionOfDrone++;
 
-		if (cyclesSinceLastDetectionOfDrone > FPS)
-		{ //lost visual for more than 1 second
-			isFirstRotation = true;
-			velocity = Vector2(0, 0); //reset velocity vector to (0,0)
+		if (!frameCompensation || cyclesSinceLastDetectionOfDrone > FPS / 2.0)
+		{ 
+			//If frame compansation is off, then no movement when drone is not detected
+			//or if lost visual for more than 0.5 seconds
+			ResetVelocityMemory();
 			return; //skip this frame to stop turret from turning indefinitely until drone is detected again.
 		}
-		//Delete this return for final build:
-		return;
 	}
 
 
@@ -253,7 +278,10 @@ void FixedUpdate()
 		RotateTowards(velocity + OFFSET_CAM, FieldOfView, SCREENSIZE);
 	}
 
+
+#ifndef DEBUGING_MODE
 	std::cout << "New Frame Ends"<< std::endl;
+#endif
 }
 
 void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize)
@@ -261,16 +289,36 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	float degreesPerPixel = fieldOfView / screenSize.x;
 	float angleX = MotorsDir.x * targetPosition.x * degreesPerPixel;
 	float angleY = MotorsDir.y * targetPosition.y * degreesPerPixel;
+
 	if (CalibrationMode)
 	{
 		angleX = CalibrationModeAngles.x;
 		angleY = CalibrationModeAngles.y;
 	}
+#ifndef DEBUGING_MODE
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
+#endif
 
-	//Note: that angleX is the angle offset in the horizontal and angleY is vertical
-	motor -> RotateMotors(Vector2(angleX, angleY));
+	totalRotation.x += angleX;
+	totalRotation.y += angleY;
 
+    // only sends rotation info to motors if it meets all requirements (fails every if statement)
+	if ((totalRotation.x <= maxRotXLeft && angleX < 0) || (totalRotation.x >= maxRotXRight && angleX > 0))
+	{
+        cout << "WARNING: Can't rotate horizontally anymore" << endl;
+        totalRotation.x -= angleX;
+		ResetVelocityMemory();
+	}
+    else if ((totalRotation.y >= maxRotYUp && angleY > 0) || (totalRotation.y <= maxRotYDown && angleY < 0))
+    {
+        cout << "WARNING: Can't rotate vertically anymore" << endl;
+        totalRotation.y -= angleY;
+		ResetVelocityMemory();
+    }
+    else
+    {
+		motor->RotateMotors(Vector2(angleX, angleY));
+    }
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {
@@ -334,3 +382,10 @@ float FPStoMilliseconds(unsigned int fps)
 	return (float)(1000 / fps);
 }
 
+void ResetVelocityMemory()
+{
+	isFirstRotation = true;
+	velocity = Vector2(0, 0); //reset velocity vector to (0,0)
+	prevTargetPos = Vector2(0, 0);
+	return;
+}

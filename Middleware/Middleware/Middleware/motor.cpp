@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include "motor.h"
 #include "Vectors.h"
+#include <iostream>
+
+using namespace std;
 
 Stepper::Stepper(int number_of_steps, int motor_pin_1, int motor_pin_2)
 {
@@ -9,7 +12,7 @@ Stepper::Stepper(int number_of_steps, int motor_pin_1, int motor_pin_2)
   this->direction = 0;      // motor direction
   this->last_step_time = 0; // time stamp in us of the last step taken
   this->number_of_steps = number_of_steps; // total number of steps for this motor
-
+    std::cout << "Num of steps: " << number_of_steps << std::endl;
   // Arduino pins for the motor control connection:
   this->motor_pin_1 = motor_pin_1;
   this->motor_pin_2 = motor_pin_2;
@@ -17,9 +20,10 @@ Stepper::Stepper(int number_of_steps, int motor_pin_1, int motor_pin_2)
   // setup the pins on the microcontroller:
   pinMode(this->motor_pin_1, OUTPUT);
   pinMode(this->motor_pin_2, OUTPUT);
-  
+
   //setSpeed
-  this->setSpeed(450);
+  this->setSpeed(50);
+  std::cout << "Step delay: " << this->step_delay << std::endl;
 }
 
 
@@ -33,6 +37,7 @@ void Stepper::setSpeed(long whatSpeed)
 
 void Stepper::stepAngle(float angles_to_move, int stepsPerRevolution) {
   int step_num = (int) (angles_to_move*stepsPerRevolution/360);
+  std:cout << "Total steps: " << step_num << std::endl;
   step(step_num);
 }
 
@@ -48,13 +53,15 @@ void Stepper::step(int steps_to_move)
   int steps_left = abs(steps_to_move);  // how many steps to take
 
   // determine direction based on whether steps_to_mode is + or -:
-  if (steps_to_move > 0) { this->direction = 1; }
-  if (steps_to_move < 0) { this->direction = 0; }
+  if (steps_to_move > 0) { this->direction = 0; }
+  if (steps_to_move < 0) { this->direction = 1; }
 
 
   // decrement the number of steps, moving one step each time:
   while (steps_left > 0)
   {
+    //std:cout << "Steps left: " << steps_left << std::endl;
+
     unsigned long now = micros();
     // move only if the appropriate delay has passed:
     if (now - this->last_step_time >= this->step_delay)
@@ -84,6 +91,7 @@ void Stepper::step(int steps_to_move)
       stepMotor(this->step_number % 4);
     }
   }
+    //completeRotation = true;
 }
 
 /*
@@ -91,6 +99,7 @@ void Stepper::step(int steps_to_move)
  */
 void Stepper::stepMotor(int thisStep)
 {
+    //std::cout << "StepNum: " << thisStep << std::endl;
     switch (thisStep) {
       case 0:  // 01
         digitalWrite(motor_pin_1, LOW);
