@@ -77,13 +77,15 @@ int main()
 	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
+	
+	IRLaser ir(24);
 
 	//Prevent the program from ending
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
 		//Laser code:
-		Shoot(1);
+		ir.Shoot(1);
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
 }
