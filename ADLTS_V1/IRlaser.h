@@ -14,7 +14,7 @@ class IRLaser
   
   int pin;
   
-  void SendPulse(int pin, int length);
+  void SendPulse(int length);
   void Shoot(int color);
   
 };
