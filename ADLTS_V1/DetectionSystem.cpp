@@ -14,6 +14,9 @@ bool initialized = false;
 bool isCircle;
 int bboxDim;
 int numFramesMissed;
+cv::Mat deltaFrame;
+Vector2 baseCoord, newCoord;
+int sameCoordCount;
 
 bool FindDrone(cv::Mat frame, int trackerNum)
 {
@@ -58,17 +61,28 @@ void Init(cv::Mat frame, int trackerNum)
 
 bool Detect(cv::Mat frame)
 {
-    Mat gray, blur;
+    Mat grayDelta, thresh, gray, blur;
     vector<Vec3f> circles;
+
+    // Compute background subtraction
+    cv::absdiff(bgFrame, frame, deltaFrame);
+
+    cvtColor(deltaFrame, grayDelta, cv::COLOR_BGR2GRAY);
+    threshold(grayDelta, thresh, 25, 255, cv::THRESH_BINARY);
+    //cv::imshow("Diff", thresh);
+    //cv::waitKey(1);
+
+    if (cv::countNonZero(grayDelta) == 0)
+    {
+        cout << "No movement" << endl;
+        return false;
+    }
 
     // Start detection timer
     auto start = chrono::high_resolution_clock::now();
 
-    // Convert to grayscale
-    cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-
     // Use Gaussian Blur to improve detection
-    GaussianBlur(gray, blur, Size(9,9), 2, 2);
+    GaussianBlur(thresh, blur, Size(9,9), 2, 2);
 
     // Apply Hough Circle Transform to frame for circle detection
     // Parameters (in order):
@@ -79,7 +93,7 @@ bool Detect(cv::Mat frame)
     // 7 - threshold for center detection
     // 8 - minimum radius that will be detected
     // 9 - maximum radius that will be detected
-    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 50, 50, 15, 100);
+    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 50, 50, 0, 100);
 
     if (circles.size() > 0)
     {
@@ -101,6 +115,9 @@ bool Detect(cv::Mat frame)
         circle(frame, center, radius, Scalar(255, 0, 0), 2, 1);
 
         // Initialize tracker
+        sameCoordCount = 0;
+        baseCoord.x = bbox.x + bbox.width/2;
+        baseCoord.y = bbox.y + bbox.height/2;
         tracker->init(frame, bbox);
         circles.clear();
     }
@@ -113,9 +130,30 @@ bool Detect(cv::Mat frame)
 
 bool Track(cv::Mat frame)
 {
+    // Todo: Fix to ensure logic makes sense
     // Updates tracker with previous bounding box coordinates
     if (tracker->update(frame,bbox))
     {
+        newCoord.x = bbox.x + bbox.width/2;
+        newCoord.y = bbox.y + bbox.height/2;
+
+        if (newCoord == baseCoord)
+        {
+            sameCoordCount++;
+
+            if (sameCoordCount > 4)
+            {
+                isCircle = false;
+                return false;
+            }
+        }
+        else
+        {
+            sameCoordCount = 0;
+            baseCoord.x = bbox.x + bbox.width/2;
+            baseCoord.y = bbox.y + bbox.height/2;
+        }
+
         cout << "Successful tracking" << endl;
         numFramesMissed = 0;
     }
@@ -123,6 +161,11 @@ bool Track(cv::Mat frame)
     {
         cout << "Tracker didn't update" << endl;
         numFramesMissed++;
+        if (numFramesMissed > 3)
+        {
+            isCircle = false;
+            return false;
+        }
     }
     // Draws a rectangle around the new bounding box
     rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
@@ -130,11 +173,6 @@ bool Track(cv::Mat frame)
     // Update central coordinate
     droneCartesianCoord.x = bbox.x + bbox.width/2;
     droneCartesianCoord.y = bbox.y + bbox.height/2;
-
-    if (numFramesMissed > 3)
-    {
-        isCircle = false;
-    }
 
     return true;
 }

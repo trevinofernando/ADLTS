@@ -8,15 +8,14 @@ const int IRpulses = 23;
 
 class IRLaser
 {
-  public:
-  IRLaser(int GPIO);
-  ~IRLaser();
-  
-  int pin;
-  
-  void SendPulse(int length);
-  void Shoot(int color);
-  
+    public:
+    IRLaser(int GPIO);
+    ~IRLaser();
+
+    int pin;
+
+    void SendPulse(int length);
+    void Shoot(int color);
 };
 
 #endif

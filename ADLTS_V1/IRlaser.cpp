@@ -1,5 +1,3 @@
-
-
 #include <wiringPi.h>
 #include <stdlib.h>
 
@@ -7,68 +5,64 @@
 
 IRLaser::IRLaser(int GPIO)
 {
-	pin = GPIO;	
-	pinMode(pin, OUTPUT);
+    pin = GPIO;
+    pinMode(pin, OUTPUT);
 }
 
-
-void IRLaser::SendPulse(int length) 
+void IRLaser::SendPulse(int length)
 {
+    int i = 0;
+    int o = 0;
 
-	int i = 0;
-	int o = 0;
-
-	while (i < length) {
-		i++;
-		while (o < IRpulses) {
-			o++;
-			digitalWrite(pin, HIGH);
-			delayMicroseconds(IRt);
-			digitalWrite(pin, LOW);
-			delayMicroseconds(IRt);
-		}
-	}
+    while (i < length)
+    {
+        i++;
+        while (o < IRpulses)
+        {
+            o++;
+            digitalWrite(pin, HIGH);
+            delayMicroseconds(IRt);
+            digitalWrite(pin, LOW);
+            delayMicroseconds(IRt);
+        }
+    }
 }
 
 void IRLaser::Shoot(int color)
 {
-	// color = 0 = red
-	// color = 1 = blu
-	sendPulse(4);
+    // color = 0 = red
+    // color = 1 = blue
+    SendPulse(4);
 
-	delayMicroseconds(IRpulse);
+    delayMicroseconds(IRpulse);
 
-	for (int i = 0; i < 8; i++)
-	{
-		if (color == 0)
-		{
-			sendPulse(1);
-		}
+    for (int i = 0; i < 8; i++)
+    {
+        if (color == 0)
+        {
+            SendPulse(1);
+        }
 
-		sendPulse(1);
-		delayMicroseconds(IRpulse);
+        SendPulse(1);
+        delayMicroseconds(IRpulse);
+    }
 
-	}
+    for (int i = 0; i < 8; i++)
+    {
+        if (color == 0)
+        {
+            SendPulse(1);
+        }
 
-	for (int i = 0; i < 8; i++) {
+        SendPulse(1);
+        delayMicroseconds(IRpulse);
+    }
 
-		if (color == 0)
-		{
-			sendPulse(1);
-		}
-
-		sendPulse(1);
-		delayMicroseconds(IRpulse);
-
-	}
-
-	sendPulse(1);
-
-	delayMicroseconds(IRpulse);
-
+    SendPulse(1);
+    delayMicroseconds(IRpulse);
 }
 
-// void Loop() 
+// void Loop()
 // {
 // 	// put your main code here, to run repeatedly:
 // 	if (Serial.available() > 0) {
@@ -90,3 +84,4 @@ void IRLaser::Shoot(int color)
 // 	//shoot(1);
 // 	//delay(5000);
 // }
+

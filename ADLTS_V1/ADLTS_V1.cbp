@@ -40,6 +40,8 @@
 		</Linker>
 		<Unit filename="DetectionSystem.cpp" />
 		<Unit filename="DetectionSystem.h" />
+		<Unit filename="IRlaser.cpp" />
+		<Unit filename="IRlaser.h" />
 		<Unit filename="Middleware.cpp" />
 		<Unit filename="Middleware.h" />
 		<Unit filename="Middleware_Config.txt" />
