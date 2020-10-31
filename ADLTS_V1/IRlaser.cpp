@@ -34,7 +34,7 @@ void IRLaser::Shoot(int color)
 {
 	// color = 0 = red
 	// color = 1 = blu
-	IRLaser::sendPulse(4);
+	sendPulse(4);
 
 	usleep(IRpulse);
 
@@ -42,10 +42,10 @@ void IRLaser::Shoot(int color)
 	{
 		if (color == 0)
 		{
-			IRLaser::sendPulse(1);
+			sendPulse(1);
 		}
 
-		IRLaser::sendPulse(1);
+		sendPulse(1);
 		usleep(IRpulse);
 
 	}
@@ -54,15 +54,15 @@ void IRLaser::Shoot(int color)
 
 		if (color == 0)
 		{
-			IRLaser::sendPulse(1);
+			sendPulse(1);
 		}
 
-		IRLaser::sendPulse(1);
+		sendPulse(1);
 		usleep(IRpulse);
 
 	}
 
-	IRLaser::sendPulse(1);
+	sendPulse(1);
 
 	usleep(IRpulse);
 
