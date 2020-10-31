@@ -70,26 +70,36 @@ float maxRotYUp = 90; // 90 deg up (looking directly up)
 //float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
 
 StepperMotors *motor = NULL;
-IRLaser *ir = NULL;
 
 
 int main()
 {
 	Start();
 
-    IRLaser ir(24);
-
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
+	HandleLaserThread(FPStoMilliseconds(4));
 
 	//Prevent the program from ending
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
-		//Laser code:
-		std::cout << "Calling laser shoot" << std::endl;
-        ir.Shoot(1);
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
+}
+
+void HandleLaserThread(unsigned int interval)
+{
+	std::thread([interval]()
+		{
+			IRLaser ir(24);
+			while (true)
+			{
+				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+				//Laser code:
+				std::cout << "Calling laser shoot" << std::endl;
+				ir.Shoot(1);
+				std::this_thread::sleep_until(x);
+			}
+		}).detach();
 }
 
 void Start() {
