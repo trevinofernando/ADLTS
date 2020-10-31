@@ -23,9 +23,9 @@ void IRLaser::SendPulse(int length)
 		while (o < IRpulses) {
 			o++;
 			digitalWrite(pin, HIGH);
-			usleep(IRt);
+			delayMicroseconds(IRt);
 			digitalWrite(pin, LOW);
-			usleep(IRt);
+			delayMicroseconds(IRt);
 		}
 	}
 }
@@ -36,7 +36,7 @@ void IRLaser::Shoot(int color)
 	// color = 1 = blu
 	sendPulse(4);
 
-	usleep(IRpulse);
+	delayMicroseconds(IRpulse);
 
 	for (int i = 0; i < 8; i++)
 	{
@@ -46,7 +46,7 @@ void IRLaser::Shoot(int color)
 		}
 
 		sendPulse(1);
-		usleep(IRpulse);
+		delayMicroseconds(IRpulse);
 
 	}
 
@@ -58,13 +58,13 @@ void IRLaser::Shoot(int color)
 		}
 
 		sendPulse(1);
-		usleep(IRpulse);
+		delayMicroseconds(IRpulse);
 
 	}
 
 	sendPulse(1);
 
-	usleep(IRpulse);
+	delayMicroseconds(IRpulse);
 
 }
 
