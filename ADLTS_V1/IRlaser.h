@@ -10,7 +10,7 @@ class IRLaser
 {
     public:
     IRLaser(int GPIO);
-    ~IRLaser();
+    //~IRLaser();
 
     int pin;
 

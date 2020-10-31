@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1604116798 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/DetectionSystem.cpp
+1604152667 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/DetectionSystem.cpp
 	<iostream>
 	<math.h>
 	<chrono>
@@ -626,7 +626,7 @@
 1595025820 /usr/local/include/opencv4/opencv2/video/background_segm.hpp
 	"opencv2/core.hpp"
 
-1604112951 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Middleware.h
+1604154277 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Middleware.h
 	"Vectors.h"
 	<opencv2/opencv.hpp>
 
@@ -670,7 +670,7 @@
 1594930138 /usr/local/include/opencv4/opencv2/tracking/onlineBoosting.hpp
 	"opencv2/core.hpp"
 
-1604114896 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Middleware.cpp
+1604155427 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/Middleware.cpp
 	<iostream>
 	<stdlib.h>
 	<chrono>
@@ -702,10 +702,13 @@
 	<math.h>
 	"Vectors.h"
 
-1604114784 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/IRlaser.h
+1604153381 /home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/IRlaser.h
 
-1604114817 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/IRlaser.cpp
+1604154628 source:/home/pi/Desktop/ADLTS/ADLTS/ADLTS_V1/IRlaser.cpp
 	<wiringPi.h>
 	<stdlib.h>
+	<stdio.h>
+	<string>
+	<iostream>
 	"IRlaser.h"
 

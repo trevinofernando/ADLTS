@@ -1,5 +1,8 @@
 #include <wiringPi.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <string>
+#include <iostream>
 
 #include "IRlaser.h"
 
@@ -14,6 +17,7 @@ void IRLaser::SendPulse(int length)
     int i = 0;
     int o = 0;
 
+    std::cout << "Sending pulse" << std::endl;
     while (i < length)
     {
         i++;
@@ -33,7 +37,7 @@ void IRLaser::Shoot(int color)
     // color = 0 = red
     // color = 1 = blue
     SendPulse(4);
-
+    std::cout << "Shooting" << std::endl;
     delayMicroseconds(IRpulse);
 
     for (int i = 0; i < 8; i++)

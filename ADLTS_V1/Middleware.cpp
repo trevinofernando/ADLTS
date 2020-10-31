@@ -67,14 +67,17 @@ Vector2 maxRot = Vector2(120, 90);
 float maxRotXLeft = -120; // 120 deg left
 float maxRotXRight = 120;
 float maxRotYUp = 90; // 90 deg up (looking directly up)
-float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
+//float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
 
 StepperMotors *motor = NULL;
+IRLaser *ir = NULL;
 
 
 int main()
 {
 	Start();
+
+    IRLaser ir(24);
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
 
@@ -83,8 +86,9 @@ int main()
 	{
 		//Break loop if return key is pressed
 		//Laser code:
-		//Shoot(1);
-		//std::this_thread::sleep_for(std::chrono::milliseconds(250));
+		std::cout << "Calling laser shoot" << std::endl;
+        ir.Shoot(1);
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
 }
 
@@ -168,6 +172,10 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 		{
 			while (true)
 			{
+
+                ir = new IRLaser(5);
+                ir->Shoot(1);
+                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
                 timer = double(cv::getTickCount());
 
@@ -327,7 +335,7 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 		motor->RotateMotors(Vector2(angleX, angleY));
     }*/
 
-    motor->RotateMotors(Vector2(angleX, angleY));
+    //motor->RotateMotors(Vector2(angleX, angleY));
 
 }
 

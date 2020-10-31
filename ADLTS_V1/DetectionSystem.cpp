@@ -64,25 +64,27 @@ bool Detect(cv::Mat frame)
     Mat grayDelta, thresh, gray, blur;
     vector<Vec3f> circles;
 
-    // Compute background subtraction
-    cv::absdiff(bgFrame, frame, deltaFrame);
+    cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
 
-    cvtColor(deltaFrame, grayDelta, cv::COLOR_BGR2GRAY);
+    // Compute background subtraction
+    //cv::absdiff(bgFrame, frame, deltaFrame);
+
+    /*cvtColor(deltaFrame, grayDelta, cv::COLOR_BGR2GRAY);
     threshold(grayDelta, thresh, 25, 255, cv::THRESH_BINARY);
-    //cv::imshow("Diff", thresh);
-    //cv::waitKey(1);
+    cv::imshow("Diff", thresh);
+    cv::waitKey(1);
 
     if (cv::countNonZero(grayDelta) == 0)
     {
         cout << "No movement" << endl;
         return false;
-    }
+    }*/
 
     // Start detection timer
     auto start = chrono::high_resolution_clock::now();
 
     // Use Gaussian Blur to improve detection
-    GaussianBlur(thresh, blur, Size(9,9), 2, 2);
+    GaussianBlur(gray, blur, Size(9,9), 2, 2);
 
     // Apply Hough Circle Transform to frame for circle detection
     // Parameters (in order):
@@ -132,7 +134,7 @@ bool Track(cv::Mat frame)
 {
     // Todo: Fix to ensure logic makes sense
     // Updates tracker with previous bounding box coordinates
-    if (tracker->update(frame,bbox))
+    /*if (tracker->update(frame,bbox))
     {
         newCoord.x = bbox.x + bbox.width/2;
         newCoord.y = bbox.y + bbox.height/2;
@@ -166,7 +168,8 @@ bool Track(cv::Mat frame)
             isCircle = false;
             return false;
         }
-    }
+    }*/
+    tracker->update(frame, bbox);
     // Draws a rectangle around the new bounding box
     rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
 
