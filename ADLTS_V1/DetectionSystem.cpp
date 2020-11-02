@@ -12,6 +12,7 @@ Ptr<Tracker> tracker;
 Rect2d bbox;
 bool initialized = false;
 bool isCircle;
+bool blurBGframe = true;
 int bboxDim;
 int numFramesMissed;
 cv::Mat deltaFrame;
@@ -64,12 +65,10 @@ bool Detect(cv::Mat frame)
     Mat grayDelta, thresh, gray, blur;
     vector<Vec3f> circles;
 
-    cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-
     // Compute background subtraction
-    //cv::absdiff(bgFrame, frame, deltaFrame);
+    /*cv::absdiff(bgFrame, frame, deltaFrame);
 
-    /*cvtColor(deltaFrame, grayDelta, cv::COLOR_BGR2GRAY);
+    cvtColor(deltaFrame, grayDelta, cv::COLOR_BGR2GRAY);
     threshold(grayDelta, thresh, 25, 255, cv::THRESH_BINARY);
     cv::imshow("Diff", thresh);
     cv::waitKey(1);
@@ -83,6 +82,8 @@ bool Detect(cv::Mat frame)
     // Start detection timer
     auto start = chrono::high_resolution_clock::now();
 
+    // Convert to gray
+    cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
     // Use Gaussian Blur to improve detection
     GaussianBlur(gray, blur, Size(9,9), 2, 2);
 
@@ -95,7 +96,7 @@ bool Detect(cv::Mat frame)
     // 7 - threshold for center detection
     // 8 - minimum radius that will be detected
     // 9 - maximum radius that will be detected
-    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 50, 50, 0, 100);
+    cv::HoughCircles(blur, circles, cv::HOUGH_GRADIENT, 1, frame.rows/8, 50, 50, 5, 75);
 
     if (circles.size() > 0)
     {
@@ -115,6 +116,7 @@ bool Detect(cv::Mat frame)
         // Draw circle on image
         Point center(droneCartesianCoord.x, droneCartesianCoord.y);
         circle(frame, center, radius, Scalar(255, 0, 0), 2, 1);
+        imshow("Detected circle", frame);
 
         // Initialize tracker
         sameCoordCount = 0;

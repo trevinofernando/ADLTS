@@ -70,7 +70,7 @@ float maxRotYUp = 90; // 90 deg up (looking directly up)
 //float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
 
 StepperMotors *motor = NULL;
-
+IRLaser *ir = NULL;
 
 int main()
 {
@@ -90,12 +90,12 @@ void HandleLaserThread(unsigned int interval)
 {
 	std::thread([interval]()
 		{
-			IRLaser ir(24);
 			while (true)
 			{
+                IRLaser ir(5);
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
 				//Laser code:
-				std::cout << "Calling laser shoot" << std::endl;
+				//std::cout << "Calling laser shoot" << std::endl;
 				ir.Shoot(1);
 				std::this_thread::sleep_until(x);
 			}
@@ -111,7 +111,9 @@ void Start() {
         std::cerr << "ERROR: Unable to open the camera" << std::endl;
         exit(0);
     }
+
     cap >> bgFrame;
+
 
 	//Read parameters from Middleware_Config.txt file
 
@@ -182,9 +184,6 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 		{
 			while (true)
 			{
-
-                ir = new IRLaser(5);
-                ir->Shoot(1);
                 std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
                 timer = double(cv::getTickCount());
