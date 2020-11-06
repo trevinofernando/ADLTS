@@ -77,7 +77,7 @@ int main()
 	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
-	HandleLaserThread(FPStoMilliseconds(4));
+	//HandleLaserThread(FPStoMilliseconds(4));
 
 	//Prevent the program from ending
 	while (std::cin.get() != '\n')
@@ -184,11 +184,11 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 		{
 			while (true)
 			{
-                std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
                 timer = double(cv::getTickCount());
 
-                for (int j = 0; j < 6; j++)
+                for (int j = 0; j < 5; j++)
                     cap.grab();
                 cap >> frame;
                 if (frame.empty())
@@ -344,7 +344,7 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 		motor->RotateMotors(Vector2(angleX, angleY));
     }*/
 
-    //motor->RotateMotors(Vector2(angleX, angleY));
+    motor->RotateMotors(Vector2(angleX, angleY));
 
 }
 

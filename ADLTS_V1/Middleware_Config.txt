@@ -9,7 +9,7 @@
   FieldOfView = 62
 
 //Velocity prediction On or Off:
-  bool predictVelocity = 0
+  bool predictVelocity = 1
 
 //Velocity prediction On or Off:
   bool frameCompensation = 0
@@ -29,8 +29,8 @@
   int OFFSET_CAM.y = 0
 
 //Motors direction (flip between 1 and -1 to invert rotation direction):
-  int MotorsDir.x = 1
-  int MotorsDir.y = 1
+  int MotorsDir.x = -1
+  int MotorsDir.y = -1
 
 //Calibration Mode for feeding middleware with known angles, ignoring Detection system.
 	bool CalibrationMode = 0
@@ -39,7 +39,7 @@
 	int CalibrationModeAngles.x = 45
 	int CalibrationModeAngles.y = 0
 
-//Tracker type {0 is "", 1 is "", 2 is "", 4 is "MedianFlow"}
+//Tracker type {0 is "", 1 is "", 2 is "KCF", 4 is "MedianFlow"}
 	int trackerType = 4
 
 //Maxium tracking distance in pixels between drone positions between frames for detection system to optimize with tracking
