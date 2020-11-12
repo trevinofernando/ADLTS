@@ -1,110 +1,91 @@
-#define LED 13
+#include <wiringPi.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string>
+#include <iostream>
 
-int incomingByte = 0;
-int IRfrequency = 38;
-int IRt = 9;
-int IRpulse = 600;
-int IRpulses = 23;
+#include "IRlaser.h"
 
-void Setup() 
+IRLaser::IRLaser(int GPIO)
 {
-	// put your setup code here, to run once:
-	Serial.begin(9600);
-	/*
-	IRt = (int) (500/IRfrequency);
-
-	IRpulses = (int) (IRpulse / (2*IRt));
-
-	IRt = IRt - 4;
-
-	Serial.print("IRt = ");
-	Serial.println(IRt, DEC);
-
-	Serial.print("IRpulse = ");
-	Serial.println(IRpulse, DEC);
-
-	Serial.print("IRpulses = ");
-	Serial.println(IRpulses, DEC);
-	*/
-	pinMode(LED, OUTPUT);
+    pin = GPIO;
+    pinMode(pin, OUTPUT);
 }
 
-
-void SendPulse(int pin, int length) 
+void IRLaser::SendPulse(int length)
 {
+    int i = 0;
+    int o = 0;
 
-	int i = 0;
-	int o = 0;
-
-	while (i < length) {
-		i++;
-		while (o < IRpulses) {
-			o++;
-			digitalWrite(pin, HIGH);
-			delayMicroseconds(IRt);
-			digitalWrite(pin, LOW);
-			delayMicroseconds(IRt);
-		}
-	}
+    //std::cout << "Sending pulse" << std::endl;
+    while (i < length)
+    {
+        i++;
+        while (o < IRpulses)
+        {
+            o++;
+            digitalWrite(pin, HIGH);
+            delayMicroseconds(IRt);
+            digitalWrite(pin, LOW);
+            delayMicroseconds(IRt);
+        }
+    }
 }
 
-void Shoot(int color)
+void IRLaser::Shoot(int color)
 {
-	// color = 0 = red
-	// color = 1 = blu
-	sendPulse(LED, 4);
+    // color = 0 = red
+    // color = 1 = blue
+    SendPulse(4);
+    //std::cout << "Shooting" << std::endl;
+    delayMicroseconds(IRpulse);
 
-	delayMicroseconds(IRpulse);
+    for (int i = 0; i < 8; i++)
+    {
+        if (color == 0)
+        {
+            SendPulse(1);
+        }
 
-	for (int i = 0; i < 8; i++)
-	{
-		if (color == 0)
-		{
-			sendPulse(LED, 1);
-		}
+        SendPulse(1);
+        delayMicroseconds(IRpulse);
+    }
 
-		sendPulse(LED, 1);
-		delayMicroseconds(IRpulse);
+    for (int i = 0; i < 8; i++)
+    {
+        if (color == 0)
+        {
+            SendPulse(1);
+        }
 
-	}
+        SendPulse(1);
+        delayMicroseconds(IRpulse);
+    }
 
-	for (int i = 0; i < 8; i++) {
-
-		if (color == 0)
-		{
-			sendPulse(LED, 1);
-		}
-
-		sendPulse(LED, 1);
-		delayMicroseconds(IRpulse);
-
-	}
-
-	sendPulse(LED, 1);
-
-	delayMicroseconds(IRpulse);
-
+    SendPulse(1);
+    delayMicroseconds(IRpulse);
 }
 
-void Loop() 
-{
-	// put your main code here, to run repeatedly:
-	if (Serial.available() > 0) {
-		// read the incoming byte:
-		incomingByte = Serial.read();
+// void Loop()
+// {
+// 	// put your main code here, to run repeatedly:
+// 	if (Serial.available() > 0) {
+// 		// read the incoming byte:
+// 		incomingByte = Serial.read();
 
-		if (incomingByte == 114)
-		{
-			Serial.println("RED");
-			shoot(0);
-		}
-		else if (incomingByte == 98)
-		{
-			Serial.println("BLUE");
-			shoot(1);
-		}
-	}
+// 		if (incomingByte == 114)
+// 		{
+// 			Serial.println("RED");
+// 			shoot(0);
+// 		}
+// 		else if (incomingByte == 98)
+// 		{
+// 			Serial.println("BLUE");
+// 			shoot(1);
+// 		}
+// 	}
 
-	//shoot(1);
-	//delay(5000);
-}
+// 	//shoot(1);
+// 	//delay(5000);
+// }
+

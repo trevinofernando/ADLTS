@@ -24,7 +24,7 @@ using namespace std;
 bool completeRotation = true;
 
 cv::VideoCapture cap;
-cv::Mat frame;
+cv::Mat frame, bgFrame;
 double timer;
 Vector2 droneCartesianCoord;
 unsigned int FPS; //frames per second
@@ -67,25 +67,39 @@ Vector2 maxRot = Vector2(120, 90);
 float maxRotXLeft = -120; // 120 deg left
 float maxRotXRight = 120;
 float maxRotYUp = 90; // 90 deg up (looking directly up)
-float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
+//float maxRotYDown = -30; // 30 deg down (to not be obscured by chassis)
 
 StepperMotors *motor = NULL;
-
+IRLaser *ir = NULL;
 
 int main()
 {
 	Start();
 
 	CallNextFrame(FixedUpdate, FPStoMilliseconds(FPS));
+	//HandleLaserThread(FPStoMilliseconds(4));
 
 	//Prevent the program from ending
 	while (std::cin.get() != '\n')
 	{
 		//Break loop if return key is pressed
-		//Laser code:
-		Shoot(1);
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
+}
+
+void HandleLaserThread(unsigned int interval)
+{
+	std::thread([interval]()
+		{
+			while (true)
+			{
+                IRLaser ir(5);
+				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
+				//Laser code:
+				//std::cout << "Calling laser shoot" << std::endl;
+				ir.Shoot(1);
+				std::this_thread::sleep_until(x);
+			}
+		}).detach();
 }
 
 void Start() {
@@ -97,6 +111,9 @@ void Start() {
         std::cerr << "ERROR: Unable to open the camera" << std::endl;
         exit(0);
     }
+
+    cap >> bgFrame;
+
 
 	//Read parameters from Middleware_Config.txt file
 
@@ -167,10 +184,11 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 		{
 			while (true)
 			{
+                //std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 				auto x = std::chrono::steady_clock::now() + std::chrono::milliseconds(interval);
                 timer = double(cv::getTickCount());
 
-                for (int j = 0; j < 6; j++)
+                for (int j = 0; j < 5; j++)
                     cap.grab();
                 cap >> frame;
                 if (frame.empty())
@@ -196,7 +214,7 @@ void CallNextFrame(std::function<void(void)> func, unsigned int interval)
 
 void FixedUpdate()
 {
-#ifdef DEBUGING_MODE
+#ifndef DEBUGING_MODE
 	std::cout << "New Frame Starts"<< std::endl;
 #endif
 
@@ -220,7 +238,7 @@ void FixedUpdate()
 
     if (onScreen)
     {
-#ifdef DEBUGING_MODE
+#ifndef DEBUGING_MODE
 		cout << "Drone Coord: (" << droneCartesianCoord.x << ", " << droneCartesianCoord.y << ")" << endl;
 		cout << "Target Pos = " << targetPosition.x << ", " << targetPosition.y << endl;
 #endif
@@ -234,7 +252,7 @@ void FixedUpdate()
 		cyclesSinceLastDetectionOfDrone++;
 
 		if (!frameCompensation || cyclesSinceLastDetectionOfDrone > FPS / 2.0)
-		{ 
+		{
 			//If frame compansation is off, then no movement when drone is not detected
 			//or if lost visual for more than 0.5 seconds
 			ResetVelocityMemory();
@@ -283,7 +301,7 @@ void FixedUpdate()
 	}
 
 
-#ifdef DEBUGING_MODE
+#ifndef DEBUGING_MODE
 	std::cout << "New Frame Ends"<< std::endl;
 #endif
 }
@@ -299,11 +317,11 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 		angleX = CalibrationModeAngles.x;
 		angleY = CalibrationModeAngles.y;
 	}
-#ifdef DEBUGING_MODE
+#ifndef DEBUGING_MODE
 	std::cout << "Angle X: " << angleX << std::endl << "Angle Y: " << angleY << std::endl;
 #endif
 
-	totalRotation.x += angleX;
+	/*totalRotation.x += angleX;
 	totalRotation.y += angleY;
 
     // only sends rotation info to motors if it meets all requirements (fails every if statement)
@@ -311,18 +329,23 @@ void RotateTowards(Vector2 targetPosition, float fieldOfView, Vector2 screenSize
 	{
         cout << "WARNING: Can't rotate horizontally anymore" << endl;
         totalRotation.x -= angleX;
+        totalRotation.y -= angleY;
 		ResetVelocityMemory();
 	}
     else if ((totalRotation.y >= maxRotYUp && angleY > 0) || (totalRotation.y <= maxRotYDown && angleY < 0))
     {
         cout << "WARNING: Can't rotate vertically anymore" << endl;
+        totalRotation.x -= angleX;
         totalRotation.y -= angleY;
 		ResetVelocityMemory();
     }
     else
     {
 		motor->RotateMotors(Vector2(angleX, angleY));
-    }
+    }*/
+
+    motor->RotateMotors(Vector2(angleX, angleY));
+
 }
 
 Vector2 ReduceNoise(Vector2 targetPosition, Vector2 prev_targetPosition) {

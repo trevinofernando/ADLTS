@@ -91,7 +91,6 @@ void Stepper::step(int steps_to_move)
       stepMotor(this->step_number % 4);
     }
   }
-    //completeRotation = true;
 }
 
 /*
