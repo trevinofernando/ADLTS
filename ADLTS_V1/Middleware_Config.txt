@@ -9,7 +9,7 @@
   FieldOfView = 62
 
 //Velocity prediction On or Off:
-  bool predictVelocity = 1
+  bool predictVelocity = 0
 
 //Velocity prediction On or Off:
   bool frameCompensation = 0

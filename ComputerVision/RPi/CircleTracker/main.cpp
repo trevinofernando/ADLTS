@@ -29,6 +29,8 @@ void Init()
 {
     // Opens camera module
     cap.open(0);
+    cap.set(3, 1280);
+    cap.set(4, 720);
 
     if (!cap.isOpened())
     {
@@ -60,7 +62,7 @@ void Init()
 
     // Captures initial frame and gives size of frame size
     cap >> frame;
-    flip(frame, frame, 0);
+    //flip(frame, frame, 0);
     cout << "Width: " << frame.size().width << endl;
     cout << "Height: " << frame.size().height << endl;
 }
@@ -82,7 +84,7 @@ Point Track()
         timer = double(cv::getTickCount());
         // Captures next frame
         cap >> frame;
-        flip(frame, frame, 0);
+        //flip(frame, frame, 0);
 
         if (frame.empty())
         {
@@ -141,16 +143,25 @@ Point Track()
 
             // Outputs frame to window
             imshow("Live", frame);
+            waitKey(1);
 
             // Write frame to output video
-            video.write(frame);
+            //video.write(frame);
 
             cap >> frame;
-            flip(frame, frame, 0);
+            //flip(frame, frame, 0);
         }
 
-        // Updates tracker with previous bounding box coordinates
-        tracker->update(frame,bbox);
+
+// Updates tracker with previous bounding box coordinates
+        if (tracker->update(frame,bbox))
+        {
+            cout << "Tracking" << endl;
+        }
+        else
+        {
+            cout << "Not tracking" << endl;
+        }
         // Draws a rectangle around the new bounding box
         rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
         // Print central coordinate of bounding box
@@ -162,10 +173,11 @@ Point Track()
         cv::putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), cv::FONT_HERSHEY_SIMPLEX, 0.7, (57, 255, 20), 2);
 
         // Write frame to output video
-        video.write(frame);
+        //video.write(frame);
 
         // Outputs frame to window
         imshow("Live", frame);
+        waitKey(1);
 
         // Exits if 'ESC' is pressed
         if (waitKey(1) == 27)
