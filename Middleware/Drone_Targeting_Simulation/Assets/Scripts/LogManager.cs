@@ -36,10 +36,6 @@ public class LogManager : MonoBehaviour
         }
 
         tab = useTabs ? '\t' : ',';
-    }
-
-    void Start()
-    {
         pathToLogs = Application.dataPath + "/TestLogs/";
     }
 
@@ -61,6 +57,7 @@ public class LogManager : MonoBehaviour
                 LogResults(fileName, "chanceToLoseFrame: " + ADLTS.chanceToLoseFrame + "\n");
                 LogResults(fileName, "velocityMaxDegreeChange: " + ADLTS.velocityMaxDegreeChange + "\n\n\n");
 
+                LogResults(fileName, "\n\n" + TestComments + "\n\n");
                 break;
             default:
                 Debug.LogError("Unkown Object '" + Obj + "'");

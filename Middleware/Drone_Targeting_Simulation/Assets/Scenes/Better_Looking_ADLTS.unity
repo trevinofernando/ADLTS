@@ -737,8 +737,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   logFileName: Data.txt
-  useTabs: 1
-  TestComments: Moving drone around in circles
+  useTabs: 0
+  TestComments: 'Test : straight line with velocity '
   ADLTS: {fileID: 1757758787}
 --- !u!1 &1370560009
 GameObject:
@@ -1404,9 +1404,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   drone: {fileID: 1497465694}
   predictVelocity: 1
-  frameCompensation: 1
+  frameCompensation: 0
   noiseDampening: 0
-  MaxNoise: 0.001
+  MaxNoise: 0
   chanceToLoseFrame: 0
   velocityMaxDegreeChange: 0.01
   MotorForHorizontalMovement: {fileID: 8574711590731155585}
@@ -1417,6 +1417,7 @@ MonoBehaviour:
   MaxLaserRange: 35
   LaserPosition: {fileID: 8574711590731155590}
   cam: {fileID: 864121664}
+  saveLogs: 0
 --- !u!4 &1757758788
 Transform:
   m_ObjectHideFlags: 0

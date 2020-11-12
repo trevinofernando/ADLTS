@@ -29,6 +29,8 @@ public class TargetingSystem : MonoBehaviour
 	public float MaxLaserRange = 35f; 
 	public Transform LaserPosition;
 	public Camera cam;
+	
+    public bool saveLogs = false;
 
     private Vector2 velocity;
     private Vector2 prevTargetPos = Vector2.zero;
@@ -63,8 +65,11 @@ public class TargetingSystem : MonoBehaviour
             Debug.LogError("Frame Rate not specified in FrameRateLimiter script", FrameRate);
             Debug.LogError("Log not specified in FrameRateLimiter script", Log);
         }
-        Log.LogParameters(LogFileName, "ADLTS");
-        Log.LogResults(LogFileName, "targetPositionX" + Log.tab + "targetPositionY" + Log.tab + "AngleX" + Log.tab + "AngleY\n\n");
+        if (saveLogs)
+        {
+            Log.LogResults(LogFileName, "targetPositionX" + Log.tab + "targetPositionY" + Log.tab + "AngleX" + Log.tab + "AngleY\n\n");
+            Log.LogParameters(LogFileName, "ADLTS");
+        }
 
         //Rotate laser in the direction of the camera for best angle 
         if (LaserPosition != null && MaxLaserRange > 0){
@@ -159,8 +164,11 @@ public class TargetingSystem : MonoBehaviour
         float angleX = targetPosition.x * fieldOfView / screenSize.x;
         float angleY = targetPosition.y * fieldOfView / screenSize.y;
 
-        Log.LogResults(LogFileName, targetPosition.x.ToString("0.000") + ", " + targetPosition.y.ToString("0.000") + Log.tab + angleX.ToString("0.000") + Log.tab + angleY.ToString("0.000") + "\n");
-        
+        if (saveLogs)
+        {
+            Log.LogResults(LogFileName, targetPosition.x.ToString("0.000") + ", " + targetPosition.y.ToString("0.000") + Log.tab + angleX.ToString("0.000") + Log.tab + angleY.ToString("0.000") + "\n");
+        }
+
         //Note: that angleX is the angle offset in the horizontal which is controlled by MotorY (that rotates on the Y axis)
         MotorForHorizontalMovement.transform.Rotate(angleX * AXIS[(int) VerticalAxis], Space.Self); //VerticalAxis controls left and right movement
         MotorForVerticalMovement.transform.Rotate(-angleY * AXIS[(int) HorizontalAxis], Space.Self); //HorizontalAxis controls up and down movement

@@ -206,3 +206,183 @@ velocityMaxDegreeChange: 0.01
 
 Entry	Acc	AvgDistance	Velocity
 
+-----New Entry: 11/10/2020 6:43:15 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 6:48:57 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 6:51:23 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 6:53:39 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:01:07 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:03:59 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0.001
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:05:07 PM-----
+
+******************* Parameters *******************
+predictVelocity: False
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:07:28 PM-----
+
+******************* Parameters *******************
+predictVelocity: False
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:09:05 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:11:10 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:12:03 PM-----
+
+******************* Parameters *******************
+predictVelocity: False
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:14:22 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:15:13 PM-----
+
+******************* Parameters *******************
+predictVelocity: False
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry	Acc	AvgDistance	Velocity
+
+-----New Entry: 11/10/2020 7:23:01 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry,Acc,AvgDistance,Velocity
+
+-----New Entry: 11/10/2020 7:29:10 PM-----
+
+******************* Parameters *******************
+predictVelocity: True
+noiseDampening: False
+MaxNoise: 0
+chanceToLoseFrame: 0
+velocityMaxDegreeChange: 0.01
+
+
+Entry,Acc,AvgDistance,Velocity
+
