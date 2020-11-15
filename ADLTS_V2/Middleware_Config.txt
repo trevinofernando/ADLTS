@@ -1,0 +1,46 @@
+//Note: the order of the variables is important and the value is read after the = sign.
+//For bool variables: True -> 1 and False -> 0
+
+
+//Frames per second:
+  int FPS = 20
+
+//Camera Field of View:
+  FieldOfView = 62
+
+//Velocity prediction On or Off:
+  bool predictVelocity = 0
+
+//Velocity prediction On or Off:
+  bool frameCompensation = 0
+
+//Noise Dampening On or Off (1 or 0):
+  bool noiseDampening = 0
+
+//Only used if Noise Dampening equals 1. Max degree to turn in one frame:
+  float velocityMaxDegreeChange = .2
+
+//Dimensions of the Screen:
+  int SCREENSIZE On X = 640
+  int SCREENSIZE On Y = 480
+
+//Offset of camera in pixels (+ for right or up and - for left and down):
+  int OFFSET_CAM.x = 0
+  int OFFSET_CAM.y = 0
+
+//Motors direction (flip between 1 and -1 to invert rotation direction):
+  int MotorsDir.x = 1
+  int MotorsDir.y = 1
+
+//Calibration Mode for feeding middleware with known angles, ignoring Detection system.
+	bool CalibrationMode = 0
+
+//Calibration Mode Angles: This are known angles for calibration. slow frame rate for better measurement
+	int CalibrationModeAngles.x = 45
+	int CalibrationModeAngles.y = 0
+
+//Tracker type {0 is "", 1 is "", 2 is "", 4 is "MedianFlow"}
+	int trackerType = 4
+
+//Maxium tracking distance in pixels between drone positions between frames for detection system to optimize with tracking
+	maxTrackingDistance = 10
