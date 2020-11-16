@@ -21,7 +21,7 @@ using namespace std;
 using namespace cv;
 
 VideoCapture cap;
-Mat frame, bgFrame;
+Mat frame, firstFrame;
 double timer;
 Vector2 droneCartesianCoord;
 float FieldOfView;
@@ -45,6 +45,7 @@ Scalar centerBoxColor = Scalar(0, 0, 255);
 Vector2 Screensize = Vector2(640, 480);
 float maxAngle = 1;
 bool limitInitDistance = false;
+bool useBGSub = false;
 
 StepperMotors *motor = NULL;
 
@@ -163,6 +164,9 @@ void Init()
     cap.set(3, Screensize.x);
     cap.set(4, Screensize.y);
 
+    // Grab first frame for background subtraction
+    cap >> firstFrame;
+
     // Middleware initialize
     FieldOfView = 62;
 
@@ -186,15 +190,29 @@ void Init()
 
 void Detect()
 {
-    Mat gray, blur;
     vector<Vec3f> circles;
 
     auto start = chrono::high_resolution_clock::now();
 
-    cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-    GaussianBlur(gray, blur, Size(9,9), 2, 2);
+    if (useBGSub)
+    {
+        Mat deltaFrame, grayDelta, thresh;
 
-    HoughCircles(blur, circles, HOUGH_GRADIENT, 1, frame.rows/8, 25, 50, 5, 75);
+        absdiff(firstFrame, frame, deltaFrame);
+        cvtColor(deltaFrame, grayDelta, COLOR_BGR2GRAY);
+        threshold(grayDelta, thresh, 25, 255, THRESH_BINARY);
+
+        HoughCircles(thresh, circles, HOUGH_GRADIENT, 1, frame.rows/8, 25, 50, 5, 75);
+    }
+    else
+    {
+        Mat gray, blur;
+
+        cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+        GaussianBlur(gray, blur, Size(9,9), 2, 2);
+
+        HoughCircles(blur, circles, HOUGH_GRADIENT, 1, frame.rows/8, 25, 50, 5, 75);
+    }
 
     if (circles.size() > 0)
     {
