@@ -53,7 +53,7 @@ public class QualityStats : MonoBehaviour
         laserRenderer = Laser.GetComponent<MeshRenderer>();
         laserCollider = Laser.GetComponent<Collider>();
         Log.LogParameters(LogFileName, "ADLTS");
-        Log.LogResults(LogFileName, "Entry" + Log.tab + "Acc" + Log.tab + "AvgDistance" + Log.tab + "Velocity\n\n");
+        Log.LogResults(LogFileName, "Entry" + Log.tab + "Acc" + Log.tab + "AvgDistance" + Log.tab + "Speed3D" + Log.tab + "Speed2D\n\n");
     }
 
     // Update is called once per frame
@@ -76,7 +76,11 @@ public class QualityStats : MonoBehaviour
             AccuarcyCounterPerNSec += AccuarcyCounter / SecondsOfLongTimeStats;
             AvgDistanceCounterPerNSec += AvgDistanceCounter / SecondsOfLongTimeStats;
 
-            Log.LogResults(Log.logFileName, frameCounter + ":" + Log.tab + accuarcy.ToString("0.000") + Log.tab + AvgDistanceCounter.ToString("0.000") + Log.tab + DroneRB.velocity + "\n");
+            Log.LogResults(Log.logFileName, frameCounter + ":" + Log.tab 
+                                            + accuarcy.ToString("0.000") + Log.tab 
+                                            + AvgDistanceCounter.ToString("0.000") + Log.tab
+                                            + DroneRB.velocity.magnitude + Log.tab
+                                            + ADLTS.velocity.magnitude + "\n");
 
             AccuarcyPerSecondValue.color = accuarcy < GoodAccuarcyTreshold ? RED : GREEN;
             AvgDistanceValue.color = AvgDistanceCounter > GoodDistanceTreshold ? RED : GREEN;
@@ -91,7 +95,11 @@ public class QualityStats : MonoBehaviour
             AccuarcyPerNSecValue.text = accuarcy + " %";
             AvgDistancePerNSecValue.text = (AvgDistanceCounterPerNSec).ToString();
 
-            Log.LogResults(Log.logFileName, frameCounter + ":" + Log.tab + accuarcy.ToString("0.000") + Log.tab + AvgDistanceCounterPerNSec.ToString("0.000") + Log.tab + DroneRB.velocity + "\n");
+            Log.LogResults(Log.logFileName, frameCounter + ":" + Log.tab 
+                                        + accuarcy.ToString("0.000") + Log.tab 
+                                        + AvgDistanceCounterPerNSec.ToString("0.000") + Log.tab
+                                        + DroneRB.velocity.magnitude + Log.tab
+                                        + ADLTS.velocity.magnitude + "\n");
 
             AccuarcyPerNSecValue.color = accuarcy < GoodAccuarcyTreshold ? RED : GREEN;
             AvgDistancePerNSecValue.color = AvgDistanceCounter > GoodDistanceTreshold ? RED : GREEN;

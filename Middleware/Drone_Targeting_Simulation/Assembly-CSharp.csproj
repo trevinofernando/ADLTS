@@ -71,11 +71,13 @@
     <None Include="Assets\DronePack\Shaders\StandardSpecular [DoubleSided].shader" />
     <None Include="Assets\DronePack\Shaders\StandardShader [DoubleSided].shader" />
     <None Include="Assets\DronePack\Shaders\UFOAnimated.shader" />
+    <None Include="Assets\TestLogs\Data.txt" />
     <None Include="Assets\DronePack\Shaders\RimGlowShader.shader" />
     <None Include="Assets\TestLogs\InputOutput.txt" />
     <None Include="Assets\DronePack\Shaders\SpaceProbeAnimated.shader" />
-    <None Include="Assets\TestLogs\Data.txt" />
+    <None Include="Assets\TestLogs\Round1_Data.txt" />
     <None Include="Assets\DronePack\Shaders\VertexAlpha.shader" />
+    <None Include="Assets\TestLogs\Round2_Data.txt" />
     <None Include="Assets\DronePack\Shaders\DronePatrolAnimated.shader" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/Fernando Trevino/Documents/GitHub Repos/ADLTS/Middleware/Drone_Targeting_Simulation/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

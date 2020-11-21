@@ -32,7 +32,7 @@ public class TargetingSystem : MonoBehaviour
 	
     public bool saveLogs = false;
 
-    private Vector2 velocity;
+    public Vector2 velocity { get; private set; }
     private Vector2 prevTargetPos = Vector2.zero;
     
     private Vector2 SCREENSIZE;
@@ -143,7 +143,8 @@ public class TargetingSystem : MonoBehaviour
 				RotateTowards(targetPosition + velocity, cam.fieldOfView, SCREENSIZE);
 				prevTargetPos = targetPosition + velocity;
 			}else{
-				isFirstRotation = false;
+                velocity = targetPosition; //only used for logs
+                isFirstRotation = false;
 				RotateTowards(targetPosition, cam.fieldOfView, SCREENSIZE);
 				prevTargetPos = targetPosition;
 			}
@@ -281,6 +282,5 @@ public class TargetingSystem : MonoBehaviour
     {
         return new Vector2((U.x > V.x ? U.x : V.x) , (U.y > V.y ? U.y : V.y));
     }
-
 	
 }

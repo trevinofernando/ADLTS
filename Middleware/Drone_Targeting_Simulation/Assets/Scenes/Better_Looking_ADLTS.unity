@@ -738,7 +738,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   logFileName: Data.txt
   useTabs: 0
-  TestComments: 'Test : straight line with velocity '
+  TestComments: 'Test 1: Random flying no velocity'
   ADLTS: {fileID: 1757758787}
 --- !u!1 &1370560009
 GameObject:
@@ -1403,12 +1403,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drone: {fileID: 1497465694}
-  predictVelocity: 1
+  predictVelocity: 0
   frameCompensation: 0
   noiseDampening: 0
   MaxNoise: 0
   chanceToLoseFrame: 0
-  velocityMaxDegreeChange: 0.01
+  velocityMaxDegreeChange: 0.0000001
   MotorForHorizontalMovement: {fileID: 8574711590731155585}
   HorizontalAxis: 2
   MotorForVerticalMovement: {fileID: 8574711590731155586}
