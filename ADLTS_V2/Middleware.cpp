@@ -21,6 +21,7 @@ using namespace std;
 using namespace cv;
 
 VideoCapture cap;
+VideoWriter video;
 Mat frame, firstFrame;
 double timer;
 Vector2 droneCartesianCoord;
@@ -43,9 +44,10 @@ Scalar centerBoxColor = Scalar(0, 0, 255);
 
 // Only values you would need to change
 Vector2 Screensize = Vector2(640, 480);
-float maxAngle = 1;
+float maxAngle = 2;
 bool limitInitDistance = false;
 bool useBGSub = false;
+Rect2d roi;
 
 StepperMotors *motor = NULL;
 
@@ -66,6 +68,8 @@ int main()
     {
         timer = double(getTickCount());
 
+        for (int i = 0; i < 1; i++)
+            cap.grab();
         cap >> frame;
         frameCount++;
         if (frame.empty())
@@ -76,7 +80,10 @@ int main()
 
         if (!isCircle)
         {
-            Detect();
+            //Detect();
+            roi = selectROI("tracker", frame);
+            tracker->init(frame, roi);
+            isCircle = true;
         }
         else
         {
@@ -113,10 +120,13 @@ int main()
         if (limitInitDistance)
             rectangle(frame, centerFrame, centerBoxColor, 2, 1);
 
-        circle(frame, Point(320, 240), 1, Scalar(0, 255, 0), 2);
+        circle(frame, Point(320, 180), 1, Scalar(0, 255, 0), 2);
+        circle(frame, Point(320, 180), 40, Scalar(0, 0, 255), 2);
 
         float fps = getTickFrequency() / (double(getTickCount()-timer));
         putText(frame, ("FPS: " + std::to_string(int(fps))), Point(75,40), FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 255), 2);
+
+        video.write(frame);
 
         imshow("Frame", frame);
         if (waitKey(1) == 27)
@@ -167,6 +177,8 @@ void Init()
     // Grab first frame for background subtraction
     cap >> firstFrame;
 
+       video = VideoWriter("Demo/SphereMovementwithIR.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(firstFrame.size().width, firstFrame.size().height));
+
     // Middleware initialize
     FieldOfView = 62;
 
@@ -202,7 +214,10 @@ void Detect()
         cvtColor(deltaFrame, grayDelta, COLOR_BGR2GRAY);
         threshold(grayDelta, thresh, 25, 255, THRESH_BINARY);
 
-        HoughCircles(thresh, circles, HOUGH_GRADIENT, 1, frame.rows/8, 25, 50, 5, 75);
+        HoughCircles(thresh, circles, HOUGH_GRADIENT, 1, frame.rows/8, 20, 50, 5, 75);
+
+        imshow("bgsub", thresh);
+        waitKey(1);
     }
     else
     {
@@ -262,7 +277,7 @@ void Track()
 
     Rect2d prevbbox = bbox;
 
-    if (tracker->update(frame,bbox))
+    if (tracker->update(frame,roi))
     {
         cout << "Tracking" << endl;
     }
@@ -271,16 +286,19 @@ void Track()
         cout << "Not tracking" << endl;
     }
 
+    //rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
+
+
     /*if (bbox.width > 1.5*prevbbox.width || bbox.height > 1.5*prevbbox.height)
     {
         cout << "Lost object" << endl;
         isCircle = false;
     }*/
 
-    rectangle(frame, bbox, Scalar(255, 0, 0), 2, 1);
+    rectangle(frame, roi, Scalar(255, 0, 0), 2, 1);
 
-    droneCartesianCoord.x = bbox.x + bbox.width/2;
-    droneCartesianCoord.y = bbox.y + bbox.height/2;
+    droneCartesianCoord.x = roi.x + roi.width/2;
+    droneCartesianCoord.y = roi.y + roi.height/2;
 
     if (droneCartesianCoord.x >= centerFrame.x && droneCartesianCoord.x <= (centerFrame.x + centerFrame.width))
     {
@@ -296,7 +314,7 @@ void Track()
 
     Vector2 offset;
     offset.x = 0;
-    offset.y = bbox.height/2;
+    offset.y = 60;
 
     targetPosition.x = droneCartesianCoord.x - center.x + offset.x;
     targetPosition.y = -droneCartesianCoord.y + center.y - offset.y;

@@ -37,7 +37,7 @@ void Stepper::setSpeed(long whatSpeed)
 
 void Stepper::stepAngle(float angles_to_move, int stepsPerRevolution) {
   int step_num = (int) (angles_to_move*stepsPerRevolution/360);
-  std:cout << "Total steps: " << step_num << std::endl;
+  //std:cout << "Total steps: " << step_num << std::endl;
   step(step_num);
 }
 
