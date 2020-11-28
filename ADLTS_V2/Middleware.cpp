@@ -80,6 +80,9 @@ int main()
 
         if (!isCircle)
         {
+            for (int i = 0; i < 100; i++)
+                cap.grab();
+            cap >> frame;
             //Detect();
             roi = selectROI("tracker", frame);
             tracker->init(frame, roi);
@@ -177,7 +180,7 @@ void Init()
     // Grab first frame for background subtraction
     cap >> firstFrame;
 
-       video = VideoWriter("Demo/SphereMovementwithIR.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(firstFrame.size().width, firstFrame.size().height));
+       video = VideoWriter("Demo/dronefly1.avi", cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30, Size(firstFrame.size().width, firstFrame.size().height));
 
     // Middleware initialize
     FieldOfView = 62;
@@ -295,7 +298,7 @@ void Track()
         isCircle = false;
     }*/
 
-    rectangle(frame, roi, Scalar(255, 0, 0), 2, 1);
+    //rectangle(frame, roi, Scalar(255, 0, 0), 2, 1);
 
     droneCartesianCoord.x = roi.x + roi.width/2;
     droneCartesianCoord.y = roi.y + roi.height/2;
